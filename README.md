@@ -36,7 +36,7 @@ pub fn main() !void {
     defer handler.deinit();
 
     try handler.start(.{
-        .intents = Discord.Intents.fromRaw(53608447);
+        .intents = Discord.Intents.fromRaw(53608447),
         .token = std.posix.getenv("DISCORD_TOKEN").?,
         .run = .{ .message_create = &message_create, .ready = &ready },
     });
