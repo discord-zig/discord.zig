@@ -857,7 +857,7 @@ pub const BailingAllocator = struct {
     const Mem = struct {
         ptr: [*]u8,
         len: usize,
-        ptr_align: u8,
+        ptr_align: std.mem.Alignment,
     };
 
     fn init(child_allocator: std.mem.Allocator) BailingAllocator {
@@ -889,7 +889,7 @@ pub const BailingAllocator = struct {
         self.responsibilities.deinit(self.child_allocator);
     }
 
-    fn alloc(ctx: *anyopaque, len: usize, ptr_align: u8, _: usize) ?[*]u8 {
+    fn alloc(ctx: *anyopaque, len: usize, ptr_align: std.mem.Alignment, _: usize) ?[*]u8 {
         const self: *BailingAllocator = @ptrCast(@alignCast(ctx));
         self.responsibilities.ensureUnusedCapacity(self.child_allocator, 1) catch return null;
         const ptr = self.child_allocator.rawAlloc(len, ptr_align, @returnAddress()) orelse return null;
@@ -897,7 +897,7 @@ pub const BailingAllocator = struct {
         return ptr;
     }
 
-    fn resize(ctx: *anyopaque, buf: []u8, buf_align: u8, new_len: usize, _: usize) bool {
+    fn resize(ctx: *anyopaque, buf: []u8, buf_align: std.mem.Alignment, new_len: usize, _: usize) bool {
         const self: *BailingAllocator = @ptrCast(@alignCast(ctx));
         const res = self.child_allocator.rawResize(buf, buf_align, new_len, @returnAddress());
         if (res) {
@@ -908,7 +908,7 @@ pub const BailingAllocator = struct {
         return res;
     }
 
-    fn free(ctx: *anyopaque, buf: []u8, buf_align: u8, _: usize) void {
+    fn free(ctx: *anyopaque, buf: []u8, buf_align: std.mem.Alignment, _: usize) void {
         const self: *BailingAllocator = @ptrCast(@alignCast(ctx));
         self.child_allocator.rawFree(buf, buf_align, @returnAddress());
 
