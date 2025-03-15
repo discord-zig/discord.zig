@@ -30,6 +30,10 @@ pub const PremiumTypes = enum {
     NitroClassic,
     Nitro,
     NitroBasic,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/user#user-object-user-flags
@@ -307,12 +311,20 @@ pub const ActivityFlags = packed struct {
 pub const IntegrationExpireBehaviors = enum {
     RemoveRole,
     Kick,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/topics/teams#data-models-membership-state-enum
 pub const TeamMembershipStates = enum(u4) {
     Invited = 1,
     Accepted = 2,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/topics/oauth2#application-application-flags
@@ -369,6 +381,10 @@ pub const MessageComponentTypes = enum(u4) {
     SelectMenuUsersAndRoles,
     /// Select menu for channels
     SelectMenuChannels,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const TextStyles = enum(u4) {
@@ -376,6 +392,10 @@ pub const TextStyles = enum(u4) {
     Short = 1,
     /// Intended for much longer inputs
     Paragraph = 2,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/interactions/message-components#buttons-button-styles
@@ -392,6 +412,10 @@ pub const ButtonStyles = enum(u4) {
     Link,
     /// A blurple button to show a Premium item in the shop
     Premium,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/channel#allowed-mentions-object-allowed-mention-types
@@ -412,6 +436,10 @@ pub const WebhookTypes = enum(u4) {
     ChannelFollower,
     /// Application webhooks are webhooks used with Interactions
     Application,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/channel#embed-object-embed-types
@@ -432,6 +460,10 @@ pub const DefaultMessageNotificationLevels = enum {
     AllMessages,
     /// Members will receive notifications only for messages that \@mention them by default
     OnlyMentions,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-explicit-content-filter-level
@@ -442,6 +474,10 @@ pub const ExplicitContentFilterLevels = enum {
     MembersWithoutRoles,
     /// Media content sent by all members will be scanned
     AllMembers,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-verification-level
@@ -456,6 +492,10 @@ pub const VerificationLevels = enum {
     High,
     /// Must have a verified phone number
     VeryHigh,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-guild-features
@@ -520,6 +560,10 @@ pub const MfaLevels = enum {
     None,
     /// Guild has a 2FA requirement for moderation actions
     Elevated,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags
@@ -553,6 +597,10 @@ pub const PremiumTiers = enum {
     Tier2,
     /// Guild has unlocked Server Boost level 3 perks
     Tier3,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-guild-nsfw-level
@@ -561,6 +609,10 @@ pub const GuildNsfwLevel = enum {
     Explicit,
     Safe,
     AgeRestricted,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
@@ -606,6 +658,10 @@ pub const ChannelTypes = packed struct {
 pub const OverwriteTypes = enum {
     Role,
     Member,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const VideoQualityModes = enum(u4) {
@@ -613,6 +669,10 @@ pub const VideoQualityModes = enum(u4) {
     Auto = 1,
     /// 720p
     Full,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
@@ -623,6 +683,10 @@ pub const ActivityTypes = enum(u4) {
     Watching = 3,
     Custom = 4,
     Competing = 5,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/channel#message-object-message-types
@@ -664,6 +728,10 @@ pub const MessageTypes = enum(u8) {
     GuildIncidentReportFalseAlarm,
     PurchaseNotification = 44,
     PollResult = 46,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/channel#message-object-message-activity-types
@@ -672,6 +740,10 @@ pub const MessageActivityTypes = enum(u4) {
     Spectate = 2,
     Listen = 3,
     JoinRequest = 5,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
@@ -680,6 +752,10 @@ pub const StickerTypes = enum(u4) {
     Standard = 1,
     /// a sticker uploaded to a guild for the guild's members
     Guild = 2,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
@@ -688,6 +764,10 @@ pub const StickerFormatTypes = enum(u4) {
     APng,
     Lottie,
     Gif,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype
@@ -697,6 +777,10 @@ pub const InteractionTypes = enum(u4) {
     MessageComponent = 3,
     ApplicationCommandAutocomplete = 4,
     ModalSubmit = 5,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptiontype
@@ -712,6 +796,10 @@ pub const ApplicationCommandOptionTypes = enum(u4) {
     Mentionable,
     Number,
     Attachment,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
@@ -842,17 +930,29 @@ pub const AuditLogEvents = enum(u4) {
     HomeSettingsCreate = 190,
     /// Guild Server Guide was updated
     HomeSettingsUpdate,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ScheduledEventPrivacyLevel = enum(u4) {
     /// the scheduled event is only accessible to guild members
     GuildOnly = 2,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ScheduledEventEntityType = enum(u4) {
     StageInstance = 1,
     Voice,
     External,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ScheduledEventStatus = enum(u4) {
@@ -860,12 +960,20 @@ pub const ScheduledEventStatus = enum(u4) {
     Active,
     Completed,
     Canceled,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/resources/invite#invite-object-target-user-types
 pub const TargetTypes = enum(u4) {
     Stream = 1,
     EmbeddedApplication,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ApplicationCommandTypes = enum(u4) {
@@ -877,12 +985,20 @@ pub const ApplicationCommandTypes = enum(u4) {
     Message,
     /// A UI-based command that represents the primary way to invoke an app's Activity
     PrimaryEntryPoint,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ApplicationCommandPermissionTypes = enum(u4) {
     Role = 1,
     User,
     Channel,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
@@ -1416,6 +1532,10 @@ pub const InteractionResponseTypes = enum(u4) {
     /// @remarks
     /// Only available for apps with Activities enabled
     LaunchActivity = 12,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const SortOrderTypes = enum {
@@ -1423,6 +1543,10 @@ pub const SortOrderTypes = enum {
     LatestActivity,
     /// Sort forum posts by creation time (from most recent to oldest)
     CreationDate,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 pub const ForumLayout = enum {
@@ -1432,6 +1556,10 @@ pub const ForumLayout = enum {
     ListView,
     /// Display posts as a collection of tiles.
     GalleryView,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
 
 /// https://discord.com/developers/docs/reference#image-formatting
@@ -1620,4 +1748,8 @@ pub const InteractionContextType = enum {
     BotDm,
     /// Interaction can be used within Group DMs and DMs other than the app's bot user
     PrivateChannel,
+
+    pub fn jsonStringify(self: @This(), jw: anytype) !void {
+        try jw.write(@intFromEnum(self));
+    }
 };
