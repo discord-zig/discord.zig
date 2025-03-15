@@ -558,6 +558,8 @@ pub const GuildFeatures = enum {
     SOUNDBOARD,
     /// guild has access to set 384kbps bitrate in voice (previously VIP voice servers)
     VIP_REGIONS,
+    /// guid has channel emojis (not in official documentation)
+    CHANNEL_ICON_EMOJIS_GENERATED,
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-mfa-level
