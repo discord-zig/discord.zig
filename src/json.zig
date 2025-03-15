@@ -1146,7 +1146,7 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
                         const item = try parseInto(ptrInfo.child, allocator, jsonval);
                         arraylist.appendAssumeCapacity(item);
                     }
-                    if (ptrInfo.sentinel) |some| {
+                    if (ptrInfo.sentinel_ptr) |some| {
                         const sentinel = @as(*align(1) const ptrInfo.child, @ptrCast(some)).*;
                         return try arraylist.toOwnedSliceSentinel(sentinel);
                     }
@@ -1160,7 +1160,7 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
                         for (string) |char|
                             arraylist.appendAssumeCapacity(char);
 
-                        if (ptrInfo.sentinel) |some| {
+                        if (ptrInfo.sentinel_ptr) |some| {
                             const sentinel = @as(*align(1) const ptrInfo.child, @ptrCast(some)).*;
                             return try arraylist.toOwnedSliceSentinel(sentinel);
                         }
