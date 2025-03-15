@@ -33,7 +33,7 @@ pub fn Partial(comptime T: type) type {
                 const aligned_ptr: *align(field.alignment) const anyopaque = @alignCast(@ptrCast(&default_value));
                 const optional_field: [1]std.builtin.Type.StructField = [_]std.builtin.Type.StructField{.{
                     .alignment = field.alignment,
-                    .default_value = aligned_ptr,
+                    .default_value_ptr = aligned_ptr,
                     .is_comptime = false,
                     .name = field.name,
                     .type = optional_type,
