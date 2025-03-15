@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
 
     const zlib = b.dependency("zlib", .{});
 
-    const deque = b.dependency("zig-deque", .{
+    const deque = b.dependency("zig_deque", .{
         .target = target,
         .optimize = optimize,
     });
