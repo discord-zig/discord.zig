@@ -1132,13 +1132,13 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
             }
         },
         .pointer => |ptrInfo| switch (ptrInfo.size) {
-            .One => {
+            .one => {
                 // we simply allocate the type and return an address instead of just returning the type
                 const r: *ptrInfo.child = try allocator.create(ptrInfo.child);
                 r.* = try parseInto(ptrInfo.child, allocator, value);
                 return r;
             },
-            .Slice => switch (value) {
+            .slice => switch (value) {
                 .array => |array| {
                     var arraylist: std.ArrayList(ptrInfo.child) = .init(allocator);
                     try arraylist.ensureUnusedCapacity(array.len);
