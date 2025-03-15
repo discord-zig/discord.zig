@@ -28,8 +28,8 @@
             .hash = "1220cd041e8d04f1da9d6f46d0438f4e6809b113ba3454fffdaae96b59d2b35a6b2b",
         },
         .websocket = .{
-            .url = "https://github.com/yuzudev/websocket.zig/archive/refs/heads/master.zip",
-            .hash = "12207c03624f9f5a1c444bde3d484a9b1e927a902067fded98364b714de412d318e0",
+            .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip",
+            .hash = "websocket-0.1.0-ZPISdXNIAwCXG7oHBj4zc1CfmZcDeyR6hfTEOo8_YI4r",
         },
         .zig_deque = .{
             .url = "https://github.com/asier-ochoa/zig-deque/archive/refs/heads/0.14.0-update.zip",
