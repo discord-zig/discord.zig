@@ -542,16 +542,22 @@ pub const GuildFeatures = enum {
     ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE,
     /// Guild has enabled role subscriptions.
     ROLE_SUBSCRIPTIONS_ENABLED,
-    /// Guild has set up auto moderation rules
-    AUTO_MODERATION,
     /// Guild has paused invites, preventing new users from joining
     INVITES_DISABLED,
-    /// Guild has access to set an animated guild banner image
-    ANIMATED_BANNER,
-    /// Guild has disabled alerts for join raids in the configured safety alerts channel
-    RAID_ALERTS_DISABLED,
     /// Guild is using the old permissions configuration behavior
     APPLICATION_COMMAND_PERMISSIONS_V2,
+    /// guild has access to set an animated guild banner image
+    ANIMATED_BANNER,
+    /// guild has set up auto moderation rules
+    AUTO_MODERATION,
+    /// guild has increased custom soundboard sound slots
+    MORE_SOUNDBOARD,
+    /// guild has disabled alerts for join raids in the configured safety alerts channel
+    RAID_ALERTS_DISABLED,
+    /// guild has created soundboard sounds
+    SOUNDBOARD,
+    /// guild has access to set 384kbps bitrate in voice (previously VIP voice servers)
+    VIP_REGIONS,
 };
 
 /// https://discord.com/developers/docs/resources/guild#guild-object-mfa-level
