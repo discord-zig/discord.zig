@@ -1276,7 +1276,7 @@ pub fn Record(comptime T: type) type {
     return struct {
         map: std.StringHashMapUnmanaged(T),
         pub fn json(allocator: mem.Allocator, value: JsonType) !@This() {
-            var map: std.StringHashMapUnmanaged(T) = .init;
+            var map: std.StringHashMapUnmanaged(T) = .empty;
 
             var iterator = value.object.iterator();
 
