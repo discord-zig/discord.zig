@@ -16,7 +16,6 @@
 
 const std = @import("std");
 const mem = std.mem;
-const Deque = @import("deque").Deque;
 const builtin = @import("builtin");
 const Types = @import("./structures/types.zig");
 
@@ -104,7 +103,13 @@ pub fn ConnectQueue(comptime T: type) type {
             shard: T,
         };
 
-        dequeue: Deque(RequestWithShard),
+        // ignore this function
+        // so it becomes a regular dequeue
+        fn eq(_: void, _: RequestWithShard, _: RequestWithShard) std.math.Order {
+            return std.math.Order.eq;
+        }
+
+        dequeue: std.PriorityDequeue(RequestWithShard, void, eq),
         allocator: mem.Allocator,
         remaining: usize,
         interval_time: u64 = 5000,
@@ -114,7 +119,7 @@ pub fn ConnectQueue(comptime T: type) type {
         pub fn init(allocator: mem.Allocator, concurrency: usize, interval_time: u64) !ConnectQueue(T) {
             return .{
                 .allocator = allocator,
-                .dequeue = try Deque(RequestWithShard).init(allocator),
+                .dequeue = std.PriorityDequeue(RequestWithShard, void, eq).init(allocator, {}),
                 .remaining = concurrency,
                 .interval_time = interval_time,
                 .concurrency = concurrency,
@@ -127,7 +132,7 @@ pub fn ConnectQueue(comptime T: type) type {
 
         pub fn push(self: *ConnectQueue(T), req: RequestWithShard) !void {
             if (self.remaining == 0) {
-                return self.dequeue.pushBack(req);
+                return self.dequeue.add(req);
             }
             self.remaining -= 1;
 
@@ -136,7 +141,7 @@ pub fn ConnectQueue(comptime T: type) type {
                 self.running = true;
             }
 
-            if (self.dequeue.len() < self.concurrency) {
+            if (self.dequeue.count() < self.concurrency) {
                 // perhaps store this?
                 const ptr = try self.allocator.create(RequestWithShard);
                 ptr.* = req;
@@ -144,15 +149,15 @@ pub fn ConnectQueue(comptime T: type) type {
                 return;
             }
 
-            return self.dequeue.pushBack(req);
+            return self.dequeue.add(req);
         }
 
         fn startInterval(self: *ConnectQueue(T)) !void {
             while (self.running) {
                 std.Thread.sleep(std.time.ns_per_ms * (self.interval_time / self.concurrency));
-                const req: ?RequestWithShard = self.dequeue.popFront();
+                const req: ?RequestWithShard = self.dequeue.removeMin(); // pop front
 
-                while (self.dequeue.len() == 0 and req == null) {}
+                while (self.dequeue.count() == 0 and req == null) {}
 
                 if (req) |r| {
                     const ptr = try self.allocator.create(RequestWithShard);
@@ -165,7 +170,7 @@ pub fn ConnectQueue(comptime T: type) type {
                     self.remaining += 1;
                 }
 
-                if (self.dequeue.len() == 0) {
+                if (self.dequeue.count() == 0) {
                     self.running = false;
                 }
             }

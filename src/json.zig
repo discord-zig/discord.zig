@@ -884,7 +884,7 @@ pub const BailingAllocator = struct {
     fn bail(self: *BailingAllocator) void {
         for (0..self.responsibilities.len) |i| {
             const memory = self.responsibilities.get(i);
-            self.child_allocator.rawFree(memory.ptr[0..memory.len], memory.ptr_align, 0);
+            self.child_allocator.rawFree(memory.ptr[0..memory.len], .fromByteUnits(memory.ptr_align), 0);
         }
         self.responsibilities.deinit(self.child_allocator);
     }
@@ -1132,13 +1132,13 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
             }
         },
         .pointer => |ptrInfo| switch (ptrInfo.size) {
-            .One => {
+            .one => {
                 // we simply allocate the type and return an address instead of just returning the type
                 const r: *ptrInfo.child = try allocator.create(ptrInfo.child);
                 r.* = try parseInto(ptrInfo.child, allocator, value);
                 return r;
             },
-            .Slice => switch (value) {
+            .slice => switch (value) {
                 .array => |array| {
                     var arraylist: std.ArrayList(ptrInfo.child) = .init(allocator);
                     try arraylist.ensureUnusedCapacity(array.len);
@@ -1146,7 +1146,7 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
                         const item = try parseInto(ptrInfo.child, allocator, jsonval);
                         arraylist.appendAssumeCapacity(item);
                     }
-                    if (ptrInfo.sentinel) |some| {
+                    if (ptrInfo.sentinel()) |some| {
                         const sentinel = @as(*align(1) const ptrInfo.child, @ptrCast(some)).*;
                         return try arraylist.toOwnedSliceSentinel(sentinel);
                     }
@@ -1160,7 +1160,7 @@ pub fn parseInto(comptime T: type, allocator: mem.Allocator, value: JsonType) Er
                         for (string) |char|
                             arraylist.appendAssumeCapacity(char);
 
-                        if (ptrInfo.sentinel) |some| {
+                        if (ptrInfo.sentinel_ptr) |some| {
                             const sentinel = @as(*align(1) const ptrInfo.child, @ptrCast(some)).*;
                             return try arraylist.toOwnedSliceSentinel(sentinel);
                         }

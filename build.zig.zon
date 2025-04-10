@@ -6,7 +6,8 @@
     //
     // It is redundant to include "zig" in this name because it is already
     // within the Zig package namespace.
-    .name = "discord.zig",
+    .name = .discordzig,
+    .fingerprint = 0xa3bc9c6f53658b29,
 
     // This is a [Semantic Version](https://semver.org/).
     // In a future version of Zig it will be used for package deduplication.
@@ -23,17 +24,13 @@
     // Once all dependencies are fetched, `zig build` no longer requires
     // internet connectivity.
     .dependencies = .{
-        .@"zig-deque" = .{
-            .url = "https://github.com/magurotuna/zig-deque/archive/refs/heads/main.zip",
-            .hash = "1220d1bedf7d5cfc7475842b3d4e8f03f1308be2e724a036677cceb5c4db13c3da3d",
-        },
         .zlib = .{
             .url = "https://github.com/yuzudev/zig-zlib/archive/refs/heads/main.zip",
-            .hash = "1220cd041e8d04f1da9d6f46d0438f4e6809b113ba3454fffdaae96b59d2b35a6b2b",
+            .hash = "zlib-0.1.0-AAAAAKm6QADNBB6NBPHanW9G0EOPTmgJsRO6NFT__arp",
         },
         .websocket = .{
-            .url = "https://github.com/yuzudev/websocket.zig/archive/refs/heads/master.zip",
-            .hash = "12207c03624f9f5a1c444bde3d484a9b1e927a902067fded98364b714de412d318e0",
+            .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip",
+            .hash = "websocket-0.1.0-ZPISdYBIAwB1yO6AFDHRHLaZSmpdh4Bz4dCmaQUqNNWh"
         },
     },
     .paths = .{

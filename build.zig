@@ -16,10 +16,6 @@ pub fn build(b: *std.Build) void {
 
     const zlib = b.dependency("zlib", .{});
 
-    const deque = b.dependency("zig-deque", .{
-        .target = target,
-        .optimize = optimize,
-    });
 
     const dzig = b.addModule("discord.zig", .{
         .root_source_file = b.path("src/discord.zig"),
@@ -28,7 +24,6 @@ pub fn build(b: *std.Build) void {
 
     dzig.addImport("ws", websocket.module("websocket"));
     dzig.addImport("zlib", zlib.module("zlib"));
-    dzig.addImport("deque", deque.module("zig-deque"));
 
     const marin = b.addExecutable(.{
         .name = "marin",
@@ -41,7 +36,6 @@ pub fn build(b: *std.Build) void {
     marin.root_module.addImport("discord", dzig);
     marin.root_module.addImport("ws", websocket.module("websocket"));
     marin.root_module.addImport("zlib", zlib.module("zlib"));
-    marin.root_module.addImport("deque", deque.module("zig-deque"));
 
     //b.installArtifact(marin);
 
@@ -61,7 +55,6 @@ pub fn build(b: *std.Build) void {
 
     lib.root_module.addImport("ws", websocket.module("websocket"));
     lib.root_module.addImport("zlib", zlib.module("zlib"));
-    lib.root_module.addImport("deque", deque.module("zig-deque"));
 
     // docs
     const docs_step = b.step("docs", "Generate documentation");
