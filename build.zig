@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     // these are boiler plate code until you know what you are doing
     // and you need to add additional options
     const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .ReleaseFast });
+    const optimize = b.standardOptimizeOption(.{});
 
     const websocket = b.dependency("websocket", .{
         .target = target,
