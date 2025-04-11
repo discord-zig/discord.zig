@@ -376,10 +376,13 @@ pub const CloseError = mem.Allocator.Error || error{ReasonTooLong};
 
 pub fn close(self: *Self, code: ShardSocketCloseCodes, reason: []const u8) CloseError!void {
     // Implement reconnection logic here
-    try self.client.close(.{
+    self.client.close(.{
         .code = @intFromEnum(code), //u16
         .reason = reason, //[]const u8
-    });
+    }) catch {
+        // log that the connection died, but don't stop the bot
+        self.logif("Shard {d} closed with error: {s} # {d}", .{self.id, reason, @intFromEnum(code)});
+    };
 }
 
 pub const SendError = net.Stream.WriteError || std.ArrayList(u8).Writer.Error;
