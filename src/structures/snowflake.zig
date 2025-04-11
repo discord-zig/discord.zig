@@ -54,8 +54,21 @@ pub const Snowflake = enum(u64) {
     }
 
     /// zjson parse
+    /// legacy
     pub fn json(_: std.mem.Allocator, value: zjson.JsonType) !@This() {
         if (value.is(.string))
+            return Snowflake.fromRaw(value.string) catch
+                std.debug.panic("invalid snowflake: {s}\n", .{value.string});
+        unreachable;
+    }
+
+    /// std.json parse
+    pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
+        const value = try std.json.parseFromSlice(std.json.Value, allocator, src, .{
+        .max_value_len = 0x100
+            });
+
+        if (value != .string)
             return Snowflake.fromRaw(value.string) catch
                 std.debug.panic("invalid snowflake: {s}\n", .{value.string});
         unreachable;

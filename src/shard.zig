@@ -381,7 +381,7 @@ pub fn close(self: *Self, code: ShardSocketCloseCodes, reason: []const u8) Close
         .reason = reason, //[]const u8
     }) catch {
         // log that the connection died, but don't stop the bot
-        self.logif("Shard {d} closed with error: {s} # {d}", .{self.id, reason, @intFromEnum(code)});
+        std.debug.print("Shard {d} closed with error: {s} # {d}\n", .{self.id, reason, @intFromEnum(code)});
     };
 }
 

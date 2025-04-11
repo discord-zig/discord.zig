@@ -310,7 +310,7 @@ pub const GatewayPayload = @import("structures/types.zig").GatewayPayload;
 // END USING NAMESPACE
 
 pub const Shard = @import("shard.zig");
-pub const zjson = @import("json.zig");
+pub const zjson = @compileError("Deprecated, use std.json instead.");
 
 pub const Internal = @import("internal.zig");
 const GatewayDispatchEvent = Internal.GatewayDispatchEvent;

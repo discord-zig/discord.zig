@@ -153,6 +153,28 @@ pub const SelectMenu = union(MessageComponentTypes) {
     SelectMenuUsersAndRoles: SelectMenuUsersAndRoles,
     SelectMenuChannels: SelectMenuChannels,
 
+    pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
+        const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+            .max_value_len  = 0x100,
+        });
+
+        if (!value != .object) @panic("coulnd't match against non-object type");
+
+        switch (value.object.get("type") orelse @panic("couldn't find property `type`")) {
+            .integer => |num| return switch (@as(MessageComponentTypes, @enumFromInt(num))) {
+                .SelectMenu => .{ .SelectMenu = try std.json.parseFromValue(SelectMenuString, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuUsers => .{ .SelectMenuUsers = try std.json.parseFromValue(SelectMenuUsers, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuRoles => .{ .SelectMenuRoles = try std.json.parseFromValue(SelectMenuRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try std.json.parseFromValue(SelectMenuUsersAndRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuChannels => .{ .SelectMenuChannels = try std.json.parseFromValue(SelectMenuChannels, allocator, value, .{.max_value_len = 0x100})},
+            },
+            else => @panic("got type but couldn't match against non enum member `type`"),
+        }
+
+        return try MessageComponent.json(allocator, value);
+    }
+
+    // legacy
     pub fn json(allocator: std.mem.Allocator, value: zjson.JsonType) !@This() {
         if (!value.is(.object))
             @panic("coulnd't match against non-object type");
