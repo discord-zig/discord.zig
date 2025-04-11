@@ -15,7 +15,6 @@
 //! PERFORMANCE OF THIS SOFTWARE.
 
 const std = @import("std");
-const zjson = @import("../json.zig");
 
 /// Milliseconds since Discord Epoch, the first second of 2015 or 1420070400000.
 pub const discord_epoch = 1420070400000;
@@ -55,16 +54,13 @@ pub const Snowflake = enum(u64) {
 
     /// zjson parse
     /// legacy
-    pub fn json(_: std.mem.Allocator, value: zjson.JsonType) !@This() {
-        if (value.is(.string))
-            return Snowflake.fromRaw(value.string) catch
-                std.debug.panic("invalid snowflake: {s}\n", .{value.string});
-        unreachable;
+    pub fn json(_: std.mem.Allocator) void {
+        @compileError("Deprecated, use std.json instead.");
     }
 
     /// std.json parse
-    pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
-        const value = try std.json.parseFromSlice(std.json.Value, allocator, src, .{
+    pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
+        const value = try std.json.innerParse(std.json.Value, allocator, src, .{
         .max_value_len = 0x100
             });
 

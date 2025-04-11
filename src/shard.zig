@@ -26,7 +26,7 @@ const http = std.http;
 
 // todo use this to read compressed messages
 const zlib = @import("zlib");
-const zjson = @import("json.zig");
+const json = @import("std").json;
 
 const Result = @import("errors.zig").Result;
 const Self = @This();
@@ -215,7 +215,7 @@ pub fn deinit(self: *Self) void {
     self.client.deinit();
 }
 
-const ReadMessageError = mem.Allocator.Error || zlib.Error || zjson.ParserError;
+const ReadMessageError = mem.Allocator.Error || zlib.Error || json.ParseError(json.Scanner);
 
 /// listens for messages
 fn readMessage(self: *Self, _: anytype) !void {
@@ -250,7 +250,7 @@ fn readMessage(self: *Self, _: anytype) !void {
                 // maybe use threads and call it instead from there
                 if (payload.t) |name| {
                     self.sequence.store(payload.s orelse 0, .monotonic);
-                    try self.handleEvent(name, decompressed); // we use zjson thereonwards
+                    try self.handleEvent(name, decompressed);
                 }
             },
             .Hello => {
@@ -398,389 +398,389 @@ pub fn send(self: *Self, _: bool, data: anytype) SendError!void {
 
 pub fn handleEvent(self: *Self, name: []const u8, payload: []const u8) !void {
     if (mem.eql(u8, name, "READY")) if (self.handler.ready) |event| {
-        const ready = try zjson.parse(GatewayPayload(Types.Ready), self.allocator, payload);
+        const ready = try json.parseFromSlice(GatewayPayload(Types.Ready), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, ready.value.d.?);
     };
 
     if (mem.eql(u8, name, "APPLICATION_COMMAND_PERMISSIONS_UPDATE")) if (self.handler.application_command_permissions_update) |event| {
-        const acp = try zjson.parse(GatewayPayload(Types.ApplicationCommandPermissions), self.allocator, payload);
+        const acp = try json.parseFromSlice(GatewayPayload(Types.ApplicationCommandPermissions), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, acp.value.d.?);
     };
 
     if (mem.eql(u8, name, "CHANNEL_CREATE")) if (self.handler.channel_create) |event| {
-        const chan = try zjson.parse(GatewayPayload(Types.Channel), self.allocator, payload);
+        const chan = try json.parseFromSlice(GatewayPayload(Types.Channel), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, chan.value.d.?);
     };
 
     if (mem.eql(u8, name, "CHANNEL_UPDATE")) if (self.handler.channel_update) |event| {
-        const chan = try zjson.parse(GatewayPayload(Types.Channel), self.allocator, payload);
+        const chan = try json.parseFromSlice(GatewayPayload(Types.Channel), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, chan.value.d.?);
     };
 
     if (mem.eql(u8, name, "CHANNEL_DELETE")) if (self.handler.channel_delete) |event| {
-        const chan = try zjson.parse(GatewayPayload(Types.Channel), self.allocator, payload);
+        const chan = try json.parseFromSlice(GatewayPayload(Types.Channel), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, chan.value.d.?);
     };
 
     if (mem.eql(u8, name, "CHANNEL_PINS_UPDATE")) if (self.handler.channel_pins_update) |event| {
-        const chan_pins_update = try zjson.parse(GatewayPayload(Types.ChannelPinsUpdate), self.allocator, payload);
+        const chan_pins_update = try json.parseFromSlice(GatewayPayload(Types.ChannelPinsUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, chan_pins_update.value.d.?);
     };
 
     if (mem.eql(u8, name, "ENTITLEMENT_CREATE")) if (self.handler.entitlement_create) |event| {
-        const entitlement = try zjson.parse(GatewayPayload(Types.Entitlement), self.allocator, payload);
+        const entitlement = try json.parseFromSlice(GatewayPayload(Types.Entitlement), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, entitlement.value.d.?);
     };
 
     if (mem.eql(u8, name, "ENTITLEMENT_UPDATE")) if (self.handler.entitlement_update) |event| {
-        const entitlement = try zjson.parse(GatewayPayload(Types.Entitlement), self.allocator, payload);
+        const entitlement = try json.parseFromSlice(GatewayPayload(Types.Entitlement), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, entitlement.value.d.?);
     };
 
     if (mem.eql(u8, name, "ENTITLEMENT_DELETE")) if (self.handler.entitlement_delete) |event| {
-        const entitlement = try zjson.parse(GatewayPayload(Types.Entitlement), self.allocator, payload);
+        const entitlement = try json.parseFromSlice(GatewayPayload(Types.Entitlement), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, entitlement.value.d.?);
     };
 
     if (mem.eql(u8, name, "INTEGRATION_CREATE")) if (self.handler.integration_create) |event| {
-        const guild_id = try zjson.parse(GatewayPayload(Types.IntegrationCreateUpdate), self.allocator, payload);
+        const guild_id = try json.parseFromSlice(GatewayPayload(Types.IntegrationCreateUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "INTEGRATION_UPDATE")) if (self.handler.integration_update) |event| {
-        const guild_id = try zjson.parse(GatewayPayload(Types.IntegrationCreateUpdate), self.allocator, payload);
+        const guild_id = try json.parseFromSlice(GatewayPayload(Types.IntegrationCreateUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "INTEGRATION_DELETE")) if (self.handler.integration_delete) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.IntegrationDelete), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.IntegrationDelete), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "INTERACTION_CREATE")) if (self.handler.interaction_create) |event| {
-        const interaction = try zjson.parse(GatewayPayload(Types.MessageInteraction), self.allocator, payload);
+        const interaction = try json.parseFromSlice(GatewayPayload(Types.MessageInteraction), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, interaction.value.d.?);
     };
 
     if (mem.eql(u8, name, "INVITE_CREATE")) if (self.handler.invite_create) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.InviteCreate), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.InviteCreate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "INVITE_DELETE")) if (self.handler.invite_delete) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.InviteDelete), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.InviteDelete), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_CREATE")) if (self.handler.message_create) |event| {
-        const message = try zjson.parse(GatewayPayload(Types.Message), self.allocator, payload);
+        const message = try json.parseFromSlice(GatewayPayload(Types.Message), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, message.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_DELETE")) if (self.handler.message_delete) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.MessageDelete), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.MessageDelete), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_UPDATE")) if (self.handler.message_update) |event| {
-        const message = try zjson.parse(GatewayPayload(Types.Message), self.allocator, payload);
+        const message = try json.parseFromSlice(GatewayPayload(Types.Message), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, message.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_DELETE_BULK")) if (self.handler.message_delete_bulk) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.MessageDeleteBulk), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.MessageDeleteBulk), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_REACTION_ADD")) if (self.handler.message_reaction_add) |event| {
-        const reaction = try zjson.parse(GatewayPayload(Types.MessageReactionAdd), self.allocator, payload);
+        const reaction = try json.parseFromSlice(GatewayPayload(Types.MessageReactionAdd), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, reaction.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_REACTION_REMOVE")) if (self.handler.message_reaction_remove) |event| {
-        const reaction = try zjson.parse(GatewayPayload(Types.MessageReactionRemove), self.allocator, payload);
+        const reaction = try json.parseFromSlice(GatewayPayload(Types.MessageReactionRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, reaction.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_REACTION_REMOVE_ALL")) if (self.handler.message_reaction_remove_all) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.MessageReactionRemoveAll), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.MessageReactionRemoveAll), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSAGE_REACTION_REMOVE_EMOJI")) if (self.handler.message_reaction_remove_emoji) |event| {
-        const emoji = try zjson.parse(GatewayPayload(Types.MessageReactionRemoveEmoji), self.allocator, payload);
+        const emoji = try json.parseFromSlice(GatewayPayload(Types.MessageReactionRemoveEmoji), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, emoji.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_CREATE")) {
         const isAvailable =
-            try zjson.parse(GatewayPayload(struct { unavailable: ?bool }), self.allocator, payload);
+            try json.parseFromSlice(GatewayPayload(struct { unavailable: ?bool }), self.allocator, payload, .{.max_value_len=0x100});
 
         if (isAvailable.value.d.?.unavailable == true) {
-            const guild = try zjson.parse(GatewayPayload(Types.Guild), self.allocator, payload);
+            const guild = try json.parseFromSlice(GatewayPayload(Types.Guild), self.allocator, payload, .{.max_value_len=0x100});
 
             if (self.handler.guild_create) |event| try event(self, guild.value.d.?);
             return;
         }
 
-        const guild = try zjson.parse(GatewayPayload(Types.UnavailableGuild), self.allocator, payload);
+        const guild = try json.parseFromSlice(GatewayPayload(Types.UnavailableGuild), self.allocator, payload, .{.max_value_len=0x100});
 
         if (self.handler.guild_create_unavailable) |event| try event(self, guild.value.d.?);
     }
 
     if (mem.eql(u8, name, "GUILD_UPDATE")) if (self.handler.guild_update) |event| {
-        const guild = try zjson.parse(GatewayPayload(Types.Guild), self.allocator, payload);
+        const guild = try json.parseFromSlice(GatewayPayload(Types.Guild), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_DELETE")) if (self.handler.guild_delete) |event| {
-        const guild = try zjson.parse(GatewayPayload(Types.UnavailableGuild), self.allocator, payload);
+        const guild = try json.parseFromSlice(GatewayPayload(Types.UnavailableGuild), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_SCHEDULED_EVENT_CREATE")) if (self.handler.guild_scheduled_event_create) |event| {
-        const s_event = try zjson.parse(GatewayPayload(Types.ScheduledEvent), self.allocator, payload);
+        const s_event = try json.parseFromSlice(GatewayPayload(Types.ScheduledEvent), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, s_event.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_SCHEDULED_EVENT_UPDATE")) if (self.handler.guild_scheduled_event_update) |event| {
-        const s_event = try zjson.parse(GatewayPayload(Types.ScheduledEvent), self.allocator, payload);
+        const s_event = try json.parseFromSlice(GatewayPayload(Types.ScheduledEvent), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, s_event.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_SCHEDULED_EVENT_DELETE")) if (self.handler.guild_scheduled_event_delete) |event| {
-        const s_event = try zjson.parse(GatewayPayload(Types.ScheduledEvent), self.allocator, payload);
+        const s_event = try json.parseFromSlice(GatewayPayload(Types.ScheduledEvent), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, s_event.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_SCHEDULED_EVENT_USER_ADD")) if (self.handler.guild_scheduled_event_user_add) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.ScheduledEventUserAdd), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.ScheduledEventUserAdd), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_SCHEDULED_EVENT_USER_REMOVE")) if (self.handler.guild_scheduled_event_user_remove) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.ScheduledEventUserRemove), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.ScheduledEventUserRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_MEMBER_ADD")) if (self.handler.guild_member_add) |event| {
-        const guild_id = try zjson.parse(GatewayPayload(Types.GuildMemberAdd), self.allocator, payload);
+        const guild_id = try json.parseFromSlice(GatewayPayload(Types.GuildMemberAdd), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_MEMBER_UPDATE")) if (self.handler.guild_member_update) |event| {
-        const fields = try zjson.parse(GatewayPayload(Types.GuildMemberUpdate), self.allocator, payload);
+        const fields = try json.parseFromSlice(GatewayPayload(Types.GuildMemberUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, fields.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_MEMBER_REMOVE")) if (self.handler.guild_member_remove) |event| {
-        const user = try zjson.parse(GatewayPayload(Types.GuildMemberRemove), self.allocator, payload);
+        const user = try json.parseFromSlice(GatewayPayload(Types.GuildMemberRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, user.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_MEMBERS_CHUNK")) if (self.handler.guild_members_chunk) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.GuildMembersChunk), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.GuildMembersChunk), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_ROLE_CREATE")) if (self.handler.guild_role_create) |event| {
-        const role = try zjson.parse(GatewayPayload(Types.GuildRoleCreate), self.allocator, payload);
+        const role = try json.parseFromSlice(GatewayPayload(Types.GuildRoleCreate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, role.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_ROLE_UPDATE")) if (self.handler.guild_role_update) |event| {
-        const role = try zjson.parse(GatewayPayload(Types.GuildRoleUpdate), self.allocator, payload);
+        const role = try json.parseFromSlice(GatewayPayload(Types.GuildRoleUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, role.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_ROLE_DELETE")) if (self.handler.guild_role_delete) |event| {
-        const role_id = try zjson.parse(GatewayPayload(Types.GuildRoleDelete), self.allocator, payload);
+        const role_id = try json.parseFromSlice(GatewayPayload(Types.GuildRoleDelete), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, role_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_DELETE")) if (self.handler.guild_delete) |event| {
-        const guild = try zjson.parse(GatewayPayload(Types.UnavailableGuild), self.allocator, payload);
+        const guild = try json.parseFromSlice(GatewayPayload(Types.UnavailableGuild), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_BAN_ADD")) if (self.handler.guild_ban_add) |event| {
-        const gba = try zjson.parse(GatewayPayload(Types.GuildBanAddRemove), self.allocator, payload);
+        const gba = try json.parseFromSlice(GatewayPayload(Types.GuildBanAddRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, gba.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_BAN_REMOVE")) if (self.handler.guild_ban_remove) |event| {
-        const gbr = try zjson.parse(GatewayPayload(Types.GuildBanAddRemove), self.allocator, payload);
+        const gbr = try json.parseFromSlice(GatewayPayload(Types.GuildBanAddRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, gbr.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_EMOJIS_UPDATE")) if (self.handler.guild_emojis_update) |event| {
-        const emojis = try zjson.parse(GatewayPayload(Types.GuildEmojisUpdate), self.allocator, payload);
+        const emojis = try json.parseFromSlice(GatewayPayload(Types.GuildEmojisUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, emojis.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_STICKERS_UPDATE")) if (self.handler.guild_stickers_update) |event| {
-        const stickers = try zjson.parse(GatewayPayload(Types.GuildStickersUpdate), self.allocator, payload);
+        const stickers = try json.parseFromSlice(GatewayPayload(Types.GuildStickersUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, stickers.value.d.?);
     };
 
     if (mem.eql(u8, name, "GUILD_INTEGRATIONS_UPDATE")) if (self.handler.guild_integrations_update) |event| {
-        const guild_id = try zjson.parse(GatewayPayload(Types.GuildIntegrationsUpdate), self.allocator, payload);
+        const guild_id = try json.parseFromSlice(GatewayPayload(Types.GuildIntegrationsUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_CREATE")) if (self.handler.thread_create) |event| {
-        const thread = try zjson.parse(GatewayPayload(Types.Channel), self.allocator, payload);
+        const thread = try json.parseFromSlice(GatewayPayload(Types.Channel), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, thread.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_UPDATE")) if (self.handler.thread_update) |event| {
-        const thread = try zjson.parse(GatewayPayload(Types.Channel), self.allocator, payload);
+        const thread = try json.parseFromSlice(GatewayPayload(Types.Channel), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, thread.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_DELETE")) if (self.handler.thread_delete) |event| {
-        const thread_data = try zjson.parse(GatewayPayload(Types.Partial(Types.Channel)), self.allocator, payload);
+        const thread_data = try json.parseFromSlice(GatewayPayload(Types.Partial(Types.Channel)), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, thread_data.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_LIST_SYNC")) if (self.handler.thread_list_sync) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.ThreadListSync), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.ThreadListSync), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_MEMBER_UPDATE")) if (self.handler.thread_member_update) |event| {
-        const guild_id = try zjson.parse(GatewayPayload(Types.ThreadMemberUpdate), self.allocator, payload);
+        const guild_id = try json.parseFromSlice(GatewayPayload(Types.ThreadMemberUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, guild_id.value.d.?);
     };
 
     if (mem.eql(u8, name, "THREAD_MEMBERS_UPDATE")) if (self.handler.thread_members_update) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.ThreadMembersUpdate), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.ThreadMembersUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "TYPING_START")) if (self.handler.typing_start) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.TypingStart), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.TypingStart), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "USER_UPDATE")) if (self.handler.user_update) |event| {
-        const user = try zjson.parse(GatewayPayload(Types.User), self.allocator, payload);
+        const user = try json.parseFromSlice(GatewayPayload(Types.User), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, user.value.d.?);
     };
 
     if (mem.eql(u8, name, "PRESENCE_UPDATE")) if (self.handler.presence_update) |event| {
-        const pu = try zjson.parse(GatewayPayload(Types.PresenceUpdate), self.allocator, payload);
+        const pu = try json.parseFromSlice(GatewayPayload(Types.PresenceUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, pu.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSSAGE_POLL_VOTE_ADD")) if (self.handler.message_poll_vote_add) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.PollVoteAdd), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.PollVoteAdd), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "MESSSAGE_POLL_VOTE_REMOVE")) if (self.handler.message_poll_vote_remove) |event| {
-        const data = try zjson.parse(GatewayPayload(Types.PollVoteRemove), self.allocator, payload);
+        const data = try json.parseFromSlice(GatewayPayload(Types.PollVoteRemove), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, data.value.d.?);
     };
 
     if (mem.eql(u8, name, "WEBHOOKS_UPDATE")) if (self.handler.webhooks_update) |event| {
-        const fields = try zjson.parse(GatewayPayload(Types.WebhookUpdate), self.allocator, payload);
+        const fields = try json.parseFromSlice(GatewayPayload(Types.WebhookUpdate), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, fields.value.d.?);
     };
 
     if (mem.eql(u8, name, "STAGE_INSTANCE_CREATE")) if (self.handler.stage_instance_create) |event| {
-        const stage = try zjson.parse(GatewayPayload(Types.StageInstance), self.allocator, payload);
+        const stage = try json.parseFromSlice(GatewayPayload(Types.StageInstance), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, stage.value.d.?);
     };
 
     if (mem.eql(u8, name, "STAGE_INSTANCE_UPDATE")) if (self.handler.stage_instance_update) |event| {
-        const stage = try zjson.parse(GatewayPayload(Types.StageInstance), self.allocator, payload);
+        const stage = try json.parseFromSlice(GatewayPayload(Types.StageInstance), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, stage.value.d.?);
     };
 
     if (mem.eql(u8, name, "STAGE_INSTANCE_DELETE")) if (self.handler.stage_instance_delete) |event| {
-        const stage = try zjson.parse(GatewayPayload(Types.StageInstance), self.allocator, payload);
+        const stage = try json.parseFromSlice(GatewayPayload(Types.StageInstance), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, stage.value.d.?);
     };
 
     if (mem.eql(u8, name, "AUTO_MODERATION_RULE_CREATE")) if (self.handler.auto_moderation_rule_create) |event| {
-        const rule = try zjson.parse(GatewayPayload(Types.AutoModerationRule), self.allocator, payload);
+        const rule = try json.parseFromSlice(GatewayPayload(Types.AutoModerationRule), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, rule.value.d.?);
     };
 
     if (mem.eql(u8, name, "AUTO_MODERATION_RULE_UPDATE")) if (self.handler.auto_moderation_rule_update) |event| {
-        const rule = try zjson.parse(GatewayPayload(Types.AutoModerationRule), self.allocator, payload);
+        const rule = try json.parseFromSlice(GatewayPayload(Types.AutoModerationRule), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, rule.value.d.?);
     };
 
     if (mem.eql(u8, name, "AUTO_MODERATION_RULE_DELETE")) if (self.handler.auto_moderation_rule_delete) |event| {
-        const rule = try zjson.parse(GatewayPayload(Types.AutoModerationRule), self.allocator, payload);
+        const rule = try json.parseFromSlice(GatewayPayload(Types.AutoModerationRule), self.allocator, payload, .{.max_value_len=0x100});
 
         try event(self, rule.value.d.?);
     };
 
     if (mem.eql(u8, name, "AUTO_MODERATION_ACTION_EXECUTION")) if (self.handler.auto_moderation_action_execution) |event| {
-        const ax = try zjson.parse(GatewayPayload(Types.AutoModerationActionExecution), self.allocator, payload);
+        const ax = try json.parseFromSlice(GatewayPayload(Types.AutoModerationActionExecution), self.allocator, payload, .{.max_value_len = 0x100});
 
         try event(self, ax.value.d.?);
     };
@@ -790,7 +790,7 @@ pub fn handleEvent(self: *Self, name: []const u8, payload: []const u8) !void {
         try anyEvent(self, payload);
 }
 
-pub const RequestFailedError = zjson.ParserError || MakeRequestError || error{FailedRequest};
+pub const RequestFailedError = MakeRequestError || error{FailedRequest} || json.ParseError(json.Scanner);
 
 // start http methods
 
@@ -2709,7 +2709,7 @@ pub fn deleteTestEntitlement(self: *Self, application_id: Snowflake) RequestFail
 }
 
 /// Returns all SKUs for a given application.
-pub fn fetchSkus(self: *Self, application_id: Snowflake) RequestFailedError!zjson.Owner([]Types.Sku) {
+pub fn fetchSkus(self: *Self, application_id: Snowflake) RequestFailedError!Result([]Types.Sku) {
     var buf: [256]u8 = undefined;
     const path = try std.fmt.bufPrint(&buf, "/applications/{d}/skus", .{application_id.into()});
 

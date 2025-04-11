@@ -15,6 +15,7 @@
 //! PERFORMANCE OF THIS SOFTWARE.
 
 const std = @import("std");
+const json = std.json;
 
 /// a hashmap for key value pairs
 /// where every key is an int
@@ -43,32 +44,25 @@ pub fn AssociativeArray(comptime E: type, comptime V: type) type {
 
     return struct {
         map: std.EnumMap(E, V),
-        pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
-            const scanner = std.json.Scanner.initCompleteInput(allocator, src);
-            defer scanner.deinit();
-
+        pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: json.ParseOptions) !@This() {
             var map: std.EnumMap(E, V) = .{};
 
-            if (try scanner.next() != .object_begin)
-                return error.InvalidJson;
+            const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+                .max_value_len = 0x100
+            });
 
-            while (true) {
-                switch (try scanner.peekNextTokenType()) {
-                    .object_end => break,
-                    .string => {}, // might be a key
-                    else => return error.UnexpectedToken,
-                }
-                const key = try std.json.innerParse(E, allocator, &scanner, .{
-                    .max_value_len = 0x100
-                });
-                const val = try std.json.innerParse(V, allocator, &scanner, .{
-                    .max_value_len = 0x100
-                });
+            var iterator = value.object.iterator();
 
-                if (map.contains(key))
-                    return error.DuplicateKey;
+            while (iterator.next()) |it| {
+                const k = it.key_ptr.*;
+                const v = it.value_ptr.*;
 
-                map.put(key, val);
+                // eg: enum(u8) would be @"enum".tag_type where tag_type is a u8
+                const int = std.fmt.parseInt(@typeInfo(E).@"enum".tag_type, k, 10) catch unreachable;
+
+                const val = try std.json.parseFromValueLeaky(V, allocator, v, .{.max_value_len = 0x100});
+
+                map.put(@enumFromInt(int), val);
             }
 
             return .{.map = map};
@@ -94,30 +88,18 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
 
     return struct {
         t: U,
-        pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
-            const scanner = std.json.Scanner.initCompleteInput(allocator, src);
-            defer scanner.deinit();
-
-            if (try scanner.next() != .object_begin)
-                return error.CouldntMatchAgainstNonObjectType;
-
+        pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: json.ParseOptions) !@This() {
             // extract next value, which should be an object
             // and should have a key "type" or whichever key might be
 
-            const value = try std.json.innerParse(std.json.Value, allocator, &scanner, .{
+            const value = try std.json.innerParse(std.json.Value, allocator, src, .{
                 .max_value_len = 0x100
             });
-
-            if (value != .object)
-                return error.CouldntMatchAgainstNonObjectType;
 
             const discriminator = value.object.get(key) orelse
                 @panic("couldn't find property " ++ key ++ "in raw object");
 
             var u: U = undefined;
-
-            if (discriminator != .integer)
-                return error.CouldntMatchAgainstNonIntegerType;
 
             const tag: @typeInfo(E).@"enum".tag_type = @intCast(discriminator.integer);
 
@@ -125,7 +107,7 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
                 if (field.value == tag) {
                     const T = comptime std.meta.fields(U)[field.value].type;
                     comptime std.debug.assert(@hasField(T, key));
-                    u = @unionInit(U, field.name, try std.json.innerParse(T, allocator, &scanner, .{.max_value_len = 0x100}));
+                    u = @unionInit(U, field.name, try std.json.innerParse(T, allocator, src, .{.max_value_len = 0x100}));
                 }
             }
 
@@ -138,17 +120,10 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
 pub fn Record(comptime T: type) type {
     return struct {
         map: std.StringHashMapUnmanaged(T),
-        pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
-            const scanner = std.json.Scanner.initCompleteInput(allocator, src);
-            defer scanner.deinit();
-
-
-            const value = try std.json.innerParse(std.json.Value, allocator, &scanner, .{
+        pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: json.ParseOptions) !@This() {
+            const value = try std.json.innerParse(std.json.Value, allocator, src, .{
                 .max_value_len = 0x100
             });
-
-            if (value != .object)
-                return error.CouldntMatchAgainstNonObjectType;
 
             errdefer value.object.deinit();
             var iterator = value.object.iterator();
@@ -169,4 +144,104 @@ pub fn Record(comptime T: type) type {
         }
     };
 }
+
+/// Either a b = Left a | Right b
+pub fn Either(comptime L: type, comptime R: type) type {
+    return union(enum) {
+        left: L,
+        right: R,
+
+        /// always returns .right
+        pub fn unwrap(self: @This()) R {
+            // discord.zig specifics
+            if (@hasField(L, "code") and @hasField(L, "message") and self == .left)
+                std.debug.panic("Error: {d}, {s}\n", .{ self.left.code, self.left.message });
+
+            // for other libraries, it'll do this
+            if (self == .left)
+                std.debug.panic("Error: {any}\n", .{self.left});
+
+            return self.right;
+        }
+
+        pub fn is(self: @This(), tag: std.meta.Tag(@This())) bool {
+            return self == tag;
+        }
+    };
+}
+
+
+/// meant to handle a `std.json.Value` and handling the deinitialization thereof
+pub fn Owned(comptime T: type) type {
+    return struct {
+        arena: *std.heap.ArenaAllocator,
+        value: T,
+
+        pub fn deinit(self: @This()) void {
+            const allocator = self.arena.child_allocator;
+            self.arena.deinit();
+            allocator.destroy(self.arena);
+        }
+    };
+}
+
+/// same as `Owned` but instead it handles 2 different values, generally `.right` is the correct one and `left` the error type
+pub fn OwnedEither(comptime L: type, comptime R: type) type {
+    return struct {
+        value: Either(L, R),
+        arena: *std.heap.ArenaAllocator,
+
+        pub fn ok(ok_value: R) @This() {
+            return .{ .value = ok_value };
+        }
+
+        pub fn err(err_value: L) @This() {
+            return .{ .value = err_value };
+        }
+
+        pub fn deinit(self: @This()) void {
+            const allocator = self.arena.child_allocator;
+            self.arena.deinit();
+            allocator.destroy(self.arena);
+        }
+    };
+}
+
+/// same as `std.json.parseFromSlice`
+pub fn parseRight(comptime L: type, comptime R: type, child_allocator: std.mem.Allocator, data: []const u8) json.ParseError(json.Scanner)!OwnedEither(L, R) {
+    var owned: OwnedEither(L, R) = .{
+        .arena = try child_allocator.create(std.heap.ArenaAllocator),
+        .value = undefined,
+    };
+    owned.arena.* = .init(child_allocator);
+    const allocator = owned.arena.allocator();
+    const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
+        .max_value_len = 0x100,
+    });
+
+    owned.value = .{ .right = try json.parseFromValueLeaky(R, allocator, value, .{.max_value_len = 0x100}) };
+    errdefer owned.arena.deinit();
+
+    return owned;
+}
+
+
+/// same as `std.json.parseFromSlice`
+pub fn parseLeft(comptime L: type, comptime R: type, child_allocator: std.mem.Allocator, data: []const u8) json.ParseError(json.Scanner)!OwnedEither(L, R) {
+    var owned: OwnedEither(L, R) = .{
+        .arena = try child_allocator.create(std.heap.ArenaAllocator),
+        .value = undefined,
+    };
+    owned.arena.* = .init(child_allocator);
+    const allocator = owned.arena.allocator();
+    const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
+        .max_value_len = 0x100,
+    });
+
+    owned.value = .{ .left = try json.parseFromValueLeaky(L, allocator, value, .{.max_value_len = 0x100}) };
+    errdefer owned.arena.deinit();
+
+    return owned;
+}
+
 

@@ -5,7 +5,6 @@ const ButtonStyles = @import("shared.zig").ButtonStyles;
 const ChannelTypes = @import("shared.zig").ChannelTypes;
 const MessageComponentTypes = @import("shared.zig").MessageComponentTypes;
 
-const zjson = @import("../json.zig");
 const std = @import("std");
 
 /// https://discord.com/developers/docs/interactions/message-components#buttons
@@ -153,20 +152,20 @@ pub const SelectMenu = union(MessageComponentTypes) {
     SelectMenuUsersAndRoles: SelectMenuUsersAndRoles,
     SelectMenuChannels: SelectMenuChannels,
 
-    pub fn jsonParse(allocator: std.mem.Allocator, src: []const u8) !@This() {
+    pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
         const value = try std.json.innerParse(std.json.Value, allocator, src, .{
             .max_value_len  = 0x100,
         });
 
-        if (!value != .object) @panic("coulnd't match against non-object type");
+        if (value != .object) @panic("coulnd't match against non-object type");
 
         switch (value.object.get("type") orelse @panic("couldn't find property `type`")) {
             .integer => |num| return switch (@as(MessageComponentTypes, @enumFromInt(num))) {
-                .SelectMenu => .{ .SelectMenu = try std.json.parseFromValue(SelectMenuString, allocator, value, .{.max_value_len = 0x100})},
-                .SelectMenuUsers => .{ .SelectMenuUsers = try std.json.parseFromValue(SelectMenuUsers, allocator, value, .{.max_value_len = 0x100})},
-                .SelectMenuRoles => .{ .SelectMenuRoles = try std.json.parseFromValue(SelectMenuRoles, allocator, value, .{.max_value_len = 0x100})},
-                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try std.json.parseFromValue(SelectMenuUsersAndRoles, allocator, value, .{.max_value_len = 0x100})},
-                .SelectMenuChannels => .{ .SelectMenuChannels = try std.json.parseFromValue(SelectMenuChannels, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenu => .{ .SelectMenu = try std.json.parseFromValueLeaky(SelectMenuString, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuUsers => .{ .SelectMenuUsers = try std.json.parseFromValueLeaky(SelectMenuUsers, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuRoles => .{ .SelectMenuRoles = try std.json.parseFromValueLeaky(SelectMenuRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try std.json.parseFromValueLeaky(SelectMenuUsersAndRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuChannels => .{ .SelectMenuChannels = try std.json.parseFromValueLeaky(SelectMenuChannels, allocator, value, .{.max_value_len = 0x100})},
             },
             else => @panic("got type but couldn't match against non enum member `type`"),
         }
@@ -175,21 +174,8 @@ pub const SelectMenu = union(MessageComponentTypes) {
     }
 
     // legacy
-    pub fn json(allocator: std.mem.Allocator, value: zjson.JsonType) !@This() {
-        if (!value.is(.object))
-            @panic("coulnd't match against non-object type");
-
-        switch (value.object.get("type") orelse @panic("couldn't find property `type`")) {
-            .number => |num| return switch (@as(MessageComponentTypes, @enumFromInt(num.integer))) {
-                .SelectMenu => .{ .SelectMenu = try zjson.parseInto(SelectMenuString, allocator, value) },
-                .SelectMenuUsers => .{ .SelectMenuUsers = try zjson.parseInto(SelectMenuUsers, allocator, value) },
-                .SelectMenuRoles => .{ .SelectMenuRoles = try zjson.parseInto(SelectMenuRoles, allocator, value) },
-                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try zjson.parseInto(SelectMenuUsersAndRoles, allocator, value) },
-                .SelectMenuChannels => .{ .SelectMenuChannels = try zjson.parseInto(SelectMenuChannels, allocator, value) },
-            },
-            else => @panic("got type but couldn't match against non enum member `type`"),
-        }
-        unreachable;
+    pub fn json(_: std.mem.Allocator) !SelectMenu {
+        @compileError("Deprecated, use std.json instead.");
     }
 };
 
@@ -229,22 +215,33 @@ pub const MessageComponent = union(MessageComponentTypes) {
     SelectMenuUsersAndRoles: SelectMenuUsersAndRoles,
     SelectMenuChannels: SelectMenuChannels,
 
-    pub fn json(allocator: std.mem.Allocator, value: zjson.JsonType) !@This() {
-        if (!value.is(.object))
-            @panic("coulnd't match against non-object type");
+    /// zjson parse
+    /// legacy
+    pub fn json(_: std.mem.Allocator) void {
+        @compileError("Deprecated, use std.json instead.");
+    }
+
+    pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
+        const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+            .max_value_len  = 0x100,
+        });
+
+        if (value != .object) @panic("coulnd't match against non-object type");
 
         switch (value.object.get("type") orelse @panic("couldn't find property `type`")) {
-            .number => |num| return switch (@as(MessageComponentTypes, @enumFromInt(num.integer))) {
-                .ActionRow => .{ .ActionRow = try zjson.parseInto([]MessageComponent, allocator, value) },
-                .Button => .{ .Button = try zjson.parseInto(Button, allocator, value) },
-                .SelectMenu => .{ .SelectMenu = try zjson.parseInto(SelectMenuString, allocator, value) },
-                .InputText => .{ .InputText = try zjson.parseInto(InputText, allocator, value) },
-                .SelectMenuUsers => .{ .SelectMenuUsers = try zjson.parseInto(SelectMenuUsers, allocator, value) },
-                .SelectMenuRoles => .{ .SelectMenuRoles = try zjson.parseInto(SelectMenuRoles, allocator, value) },
-                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try zjson.parseInto(SelectMenuUsersAndRoles, allocator, value) },
-                .SelectMenuChannels => .{ .SelectMenuChannels = try zjson.parseInto(SelectMenuChannels, allocator, value) },
+            .integer => |num| return switch (@as(MessageComponentTypes, @enumFromInt(num))) {
+                .ActionRow => .{ .ActionRow = try std.json.parseFromValueLeaky([]MessageComponent, allocator, value, .{.max_value_len = 0x100}) },
+                .Button => .{ .Button = try std.json.parseFromValueLeaky(Button, allocator, value, .{.max_value_len = 0x100}) },
+                .SelectMenu => .{ .SelectMenu = try std.json.parseFromValueLeaky(SelectMenuString, allocator, value, .{.max_value_len = 0x100})},
+                .InputText => .{ .InputText = try std.json.parseFromValueLeaky(InputText, allocator, value, .{.max_value_len = 0x100}) },
+                .SelectMenuUsers => .{ .SelectMenuUsers = try std.json.parseFromValueLeaky(SelectMenuUsers, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuRoles => .{ .SelectMenuRoles = try std.json.parseFromValueLeaky(SelectMenuRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuUsersAndRoles => .{ .SelectMenuUsersAndRoles = try std.json.parseFromValueLeaky(SelectMenuUsersAndRoles, allocator, value, .{.max_value_len = 0x100})},
+                .SelectMenuChannels => .{ .SelectMenuChannels = try std.json.parseFromValueLeaky(SelectMenuChannels, allocator, value, .{.max_value_len = 0x100})},
             },
             else => @panic("got type but couldn't match against non enum member `type`"),
         }
+
+        return try MessageComponent.jsonParse(allocator, value);
     }
 };
