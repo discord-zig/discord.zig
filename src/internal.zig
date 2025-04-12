@@ -355,6 +355,6 @@ pub fn GatewayDispatchEvent(comptime T: type) type {
 
         ready: ?*const fn (save: T, data: Types.Ready) anyerror!void = undefined,
         // TODO: implement // resumed: null = null,
-        any: ?*const fn (save: T, data: []const u8) anyerror!void = undefined,
+        any: ?*const fn (save: T, data: std.json.Value) anyerror!void = undefined,
     };
 }

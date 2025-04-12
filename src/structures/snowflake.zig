@@ -61,10 +61,11 @@ pub const Snowflake = enum(u64) {
     /// std.json parse
     pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
         const value = try std.json.innerParse(std.json.Value, allocator, src, .{
-        .max_value_len = 0x100
-            });
+            .ignore_unknown_fields = true,
+            .max_value_len = 0x1000,
+        });
 
-        if (value != .string)
+        if (value == .string)
             return Snowflake.fromRaw(value.string) catch
                 std.debug.panic("invalid snowflake: {s}\n", .{value.string});
         unreachable;

@@ -1,44 +1,44 @@
-//! ISC License
-//!
-//! Copyright (c) 2024-2025 Yuzu
-//!
-//! Permission to use, copy, modify, and/or distribute this software for any
-//! purpose with or without fee is hereby granted, provided that the above
-//! copyright notice and this permission notice appear in all copies.
-//!
-//! THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-//! REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-//! AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-//! INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-//! LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-//! OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-//! PERFORMANCE OF THIS SOFTWARE.
+    //! ISC License
+    //!
+    //! Copyright (c) 2024-2025 Yuzu
+    //!
+    //! Permission to use, copy, modify, and/or distribute this software for any
+    //! purpose with or without fee is hereby granted, provided that the above
+    //! copyright notice and this permission notice appear in all copies.
+    //!
+    //! THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    //! REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    //! AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    //! INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    //! LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    //! OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    //! PERFORMANCE OF THIS SOFTWARE.
 
-const Snowflake = @import("snowflake.zig").Snowflake;
-const SkuFlags = @import("shared.zig").SkuFlags;
+    const Snowflake = @import("snowflake.zig").Snowflake;
+    const SkuFlags = @import("shared.zig").SkuFlags;
 
-/// https://discord.com/developers/docs/monetization/entitlements#entitlement-object-entitlement-structure
-pub const Entitlement = struct {
-    /// ID of the entitlement
-    id: Snowflake,
-    /// ID of the SKU
-    sku_id: Snowflake,
-    /// ID of the user that is granted access to the entitlement's sku
-    user_id: ?Snowflake,
-    /// ID of the guild that is granted access to the entitlement's sku
-    guild_id: ?Snowflake,
-    /// ID of the parent application
-    application_id: Snowflake,
-    /// Type of entitlement
-    type: EntitlementType,
-    /// Entitlement was deleted
-    deleted: bool,
-    /// Start date at which the entitlement is valid. Not present when using test entitlements
-    starts_at: ?[]const u8,
-    /// Date at which the entitlement is no longer valid. Not present when using test entitlements
-    ends_at: ?[]const u8,
-    /// For consumable items, whether or not the entitlement has been consumed
-    consumed: ?bool,
+    /// https://discord.com/developers/docs/monetization/entitlements#entitlement-object-entitlement-structure
+    pub const Entitlement = struct {
+        /// ID of the entitlement
+        id: Snowflake,
+        /// ID of the SKU
+        sku_id: Snowflake,
+        /// ID of the user that is granted access to the entitlement's sku
+        user_id: ?Snowflake = null,
+        /// ID of the guild that is granted access to the entitlement's sku
+        guild_id: ?Snowflake = null,
+        /// ID of the parent application
+        application_id: Snowflake,
+        /// Type of entitlement
+        type: EntitlementType,
+        /// Entitlement was deleted
+        deleted: bool,
+        /// Start date at which the entitlement is valid. Not present when using test entitlements
+        starts_at: ?[]const u8 = null,
+        /// Date at which the entitlement is no longer valid. Not present when using test entitlements
+        ends_at: ?[]const u8 = null,
+        /// For consumable items, whether or not the entitlement has been consumed
+        consumed: ?bool = null,
 };
 
 /// https://discord.com/developers/docs/monetization/entitlements#entitlement-object-entitlement-types

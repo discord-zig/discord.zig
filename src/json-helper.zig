@@ -48,6 +48,7 @@ pub fn AssociativeArray(comptime E: type, comptime V: type) type {
             var map: std.EnumMap(E, V) = .{};
 
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+                .ignore_unknown_fields = true,
                 .max_value_len = 0x100
             });
 
@@ -60,7 +61,10 @@ pub fn AssociativeArray(comptime E: type, comptime V: type) type {
                 // eg: enum(u8) would be @"enum".tag_type where tag_type is a u8
                 const int = std.fmt.parseInt(@typeInfo(E).@"enum".tag_type, k, 10) catch unreachable;
 
-                const val = try std.json.parseFromValueLeaky(V, allocator, v, .{.max_value_len = 0x100});
+                const val = try std.json.parseFromValueLeaky(V, allocator, v, .{
+                    .ignore_unknown_fields = true,
+                    .max_value_len = 0x100,
+                });
 
                 map.put(@enumFromInt(int), val);
             }
@@ -93,6 +97,7 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
             // and should have a key "type" or whichever key might be
 
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+                .ignore_unknown_fields = true,
                 .max_value_len = 0x100
             });
 
@@ -107,7 +112,10 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
                 if (field.value == tag) {
                     const T = comptime std.meta.fields(U)[field.value].type;
                     comptime std.debug.assert(@hasField(T, key));
-                    u = @unionInit(U, field.name, try std.json.innerParse(T, allocator, src, .{.max_value_len = 0x100}));
+                    u = @unionInit(U, field.name, try std.json.innerParse(T, allocator, src, .{
+                        .ignore_unknown_fields = true,
+                        .max_value_len = 0x100,
+                    }));
                 }
             }
 
@@ -122,6 +130,7 @@ pub fn Record(comptime T: type) type {
         map: std.StringHashMapUnmanaged(T),
         pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: json.ParseOptions) !@This() {
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
+                .ignore_unknown_fields = true,
                 .max_value_len = 0x100
             });
 
@@ -137,7 +146,10 @@ pub fn Record(comptime T: type) type {
                 // might leak because std.json is retarded
                 // errdefer allocator.free(k);
                 // errdefer v.deinit(allocator);
-                try map.put(allocator, k, try std.json.parseFromValue(T, allocator, v, .{ .max_value_len =0x100}));
+                try map.put(allocator, k, try std.json.parseFromValue(T, allocator, v, .{
+                    .ignore_unknown_fields = true,
+                    .max_value_len = 0x100,
+                }));
             }
 
             return .{ .map = map };
@@ -216,10 +228,14 @@ pub fn parseRight(comptime L: type, comptime R: type, child_allocator: std.mem.A
     owned.arena.* = .init(child_allocator);
     const allocator = owned.arena.allocator();
     const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
+        .ignore_unknown_fields = true,
         .max_value_len = 0x100,
     });
 
-    owned.value = .{ .right = try json.parseFromValueLeaky(R, allocator, value, .{.max_value_len = 0x100}) };
+    owned.value = .{ .right = try json.parseFromValueLeaky(R, allocator, value, .{
+        .ignore_unknown_fields = true,
+        .max_value_len = 0x100,
+    }) };
     errdefer owned.arena.deinit();
 
     return owned;
@@ -235,10 +251,14 @@ pub fn parseLeft(comptime L: type, comptime R: type, child_allocator: std.mem.Al
     owned.arena.* = .init(child_allocator);
     const allocator = owned.arena.allocator();
     const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
+        .ignore_unknown_fields = true,
         .max_value_len = 0x100,
     });
 
-    owned.value = .{ .left = try json.parseFromValueLeaky(L, allocator, value, .{.max_value_len = 0x100}) };
+    owned.value = .{ .left = try json.parseFromValueLeaky(L, allocator, value, .{
+        .ignore_unknown_fields = true,
+        .max_value_len = 0x100,
+    }) };
     errdefer owned.arena.deinit();
 
     return owned;
