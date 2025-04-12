@@ -68,10 +68,10 @@ Contributions are welcome! Please open an issue or pull request if you'd like to
 ## general roadmap
 | Task                                                        | Status |
 |-------------------------------------------------------------|--------|
-| stablish good sharding support with buckets                 | ✅     |
+| stablish good sharding support w buckets and worker threads | ✅     |
+| finish multi threading                                      | ✅     |
 | finish the event coverage roadmap                           | ✅     |
 | proper error handling                                       | ✅     |
-| use the priority queues for handling ratelimits (half done) | ❌     |
 | make the library scalable with a gateway proxy              | ❌     |
 | get a cool logo                                             | ❌     |
 

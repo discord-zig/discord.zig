@@ -37,6 +37,10 @@ connect_queue: ConnectQueue(Shard),
 shards: std.AutoArrayHashMap(usize, Shard),
 handler: GatewayDispatchEvent(*Shard),
 
+/// where we dispatch work for every thread, threads must be spawned upon shard creation
+/// make sure the address of workers is stable
+workers: std.Thread.Pool = undefined,
+
 /// configuration settings
 options: SessionOptions,
 log: Log,
@@ -64,6 +68,10 @@ pub const SessionOptions = struct {
     shard_end: usize = 1,
     /// The payload handlers for messages on the shard.
     resharding: ?struct { interval: u64, percentage: usize } = null,
+    /// worker threads
+    workers_per_shard: usize = 1,
+    /// The shard lifespan in milliseconds. If a shard is not connected within this time, it will be closed.
+    shard_lifespan: ?u64 = null,
 };
 
 pub fn init(allocator: mem.Allocator, settings: struct {
@@ -78,6 +86,7 @@ pub fn init(allocator: mem.Allocator, settings: struct {
         .allocator = allocator,
         .connect_queue = try ConnectQueue(Shard).init(allocator, concurrency, 5000),
         .shards = .init(allocator),
+        .workers = undefined,
         .shard_details = ShardDetails{
             .token = settings.token,
             .intents = settings.intents,
@@ -92,6 +101,7 @@ pub fn init(allocator: mem.Allocator, settings: struct {
             .total_shards = settings.options.total_shards,
             .shard_start = settings.options.shard_start,
             .shard_end = settings.options.shard_end,
+            .workers_per_shard = settings.options.workers_per_shard,
         },
         .log = settings.log,
     };
@@ -147,6 +157,13 @@ fn spawnBuckets(self: *Self) ![][]Shard {
 
     self.logif("{d} buckets created", .{bucket_count});
 
+    // finally defihne threads
+
+    try self.workers.init(.{
+        .allocator = self.allocator,
+        .n_jobs = self.options.workers_per_shard * self.options.total_shards,
+    });
+
     return buckets;
 }
 
@@ -163,6 +180,7 @@ fn create(self: *Self, shard_id: usize) !Shard {
         },
         .run = self.handler,
         .log = self.log,
+        .sharder_pool = &self.workers,
     });
 
     try self.shards.put(shard_id, shard);
