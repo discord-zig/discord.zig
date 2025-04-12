@@ -265,7 +265,7 @@ fn readMessage(self: *Self, _: anytype) !void {
 
         // make sure to avoid race conditions
         // we free this payload eventually once our event executes
-        payload.* = raw.value.d.?;
+        if (raw.value.d) |p| payload.* = p;
 
         switch (@as(Opcode, @enumFromInt(raw.value.op))) {
             .Dispatch => {
