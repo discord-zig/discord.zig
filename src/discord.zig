@@ -163,8 +163,6 @@ pub const ModifyGuildChannelPositions = @import("structures/types.zig").ModifyGu
 pub const CreateChannelInvite = @import("structures/types.zig").CreateChannelInvite;
 pub const ApplicationCommand = @import("structures/types.zig").ApplicationCommand;
 pub const CreateApplicationCommand = @import("structures/types.zig").CreateApplicationCommand;
-pub const LocaleMap = @import("structures/types.zig").LocaleMap;
-pub const InteractionEntryPointCommandHandlerType = @import("structures/types.zig").InteractionEntryPointCommandHandlerType;
 pub const ApplicationCommandOption = @import("structures/types.zig").ApplicationCommandOption;
 pub const ApplicationCommandOptionChoice = @import("structures/types.zig").ApplicationCommandOptionChoice;
 pub const GuildApplicationCommandPermissions = @import("structures/types.zig").GuildApplicationCommandPermissions;
@@ -309,8 +307,13 @@ pub const ApplicationWebhook = @import("structures/types.zig").ApplicationWebhoo
 pub const GatewayPayload = @import("structures/types.zig").GatewayPayload;
 // END USING NAMESPACE
 
+pub const CacheTables = @import("cache.zig").CacheTables;
+pub const CacheLike = @import("cache.zig").CacheLike;
+pub const DefaultCache = @import("cache.zig").DefaultCache;
+
+pub const Permissions = @import("extra/permissions.zig").Permissions;
 pub const Shard = @import("shard.zig");
-pub const zjson = @compileError("Deprecated, use std.json instead.");
+pub const zjson = @compileError("Deprecated.");
 
 pub const Internal = @import("internal.zig");
 const GatewayDispatchEvent = Internal.GatewayDispatchEvent;
@@ -357,6 +360,7 @@ pub fn start(self: *Self, settings: struct {
     },
     run: GatewayDispatchEvent(*Shard),
     log: Log,
+    cache: @import("cache.zig").CacheTables,
 }) !void {
     self.token = settings.token;
     var req = FetchReq.init(self.allocator, settings.token);
@@ -376,7 +380,7 @@ pub fn start(self: *Self, settings: struct {
 
     self.sharder = try Sharder.init(self.allocator, .{
         .token = settings.token,
-        .intents = settings.intents,
+            .intents = settings.intents,
         .run = settings.run,
         .options = SessionOptions{
             .info = parsed.value,
@@ -386,6 +390,7 @@ pub fn start(self: *Self, settings: struct {
             .spawn_shard_delay = settings.options.spawn_shard_delay,
         },
         .log = settings.log,
+        .cache = settings.cache,
     });
 
     try self.sharder.spawnShards();

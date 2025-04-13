@@ -39,6 +39,7 @@ pub fn main() !void {
         .intents = Discord.Intents.fromRaw(53608447),
         .token = std.posix.getenv("DISCORD_TOKEN").?,
         .run = .{ .message_create = &message_create, .ready = &ready },
+        .cache = Discord.CacheTables,
     });
 }
 ```

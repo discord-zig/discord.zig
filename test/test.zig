@@ -48,5 +48,6 @@ pub fn main() !void {
         .run = .{ .message_create = &message_create, .ready = &ready },
         .log = .yes,
         .options = .{},
+        .cache = Discord.CacheTables.defaults(allocator),
     });
 }

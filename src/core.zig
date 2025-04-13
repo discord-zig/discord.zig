@@ -44,6 +44,7 @@ workers: std.Thread.Pool = undefined,
 /// configuration settings
 options: SessionOptions,
 log: Log,
+cache: @import("cache.zig").CacheTables,
 
 pub const ShardData = struct {
     /// resume seq to resume connections
@@ -80,6 +81,7 @@ pub fn init(allocator: mem.Allocator, settings: struct {
     options: SessionOptions,
     run: GatewayDispatchEvent(*Shard),
     log: Log,
+    cache: @import("cache.zig").CacheTables,
 }) mem.Allocator.Error!Self {
     const concurrency = settings.options.info.session_start_limit.?.max_concurrency;
     return .{
@@ -104,6 +106,7 @@ pub fn init(allocator: mem.Allocator, settings: struct {
             .workers_per_shard = settings.options.workers_per_shard,
         },
         .log = settings.log,
+        .cache = settings.cache,
     };
 }
 
@@ -180,6 +183,7 @@ fn create(self: *Self, shard_id: usize) !Shard {
         },
         .run = self.handler,
         .log = self.log,
+        .cache = self.cache,
         .sharder_pool = &self.workers,
     });
 

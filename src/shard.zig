@@ -99,6 +99,7 @@ inflator: zlib.Decompressor,
 ws_mutex: std.Thread.Mutex = .{},
 rw_mutex: std.Thread.RwLock = .{},
 log: Log = .no,
+cache: @import("cache.zig").CacheTables,
 
 pub fn resumable(self: *Self) bool {
     return self.resume_gateway_url != null and
@@ -152,6 +153,7 @@ pub fn init(allocator: mem.Allocator, shard_id: usize, total_shards: usize, sett
     options: ShardOptions,
     run: GatewayDispatchEvent(*Self),
     log: Log,
+    cache: @import("cache.zig").CacheTables,
     sharder_pool: ?*std.Thread.Pool = null,
 }) zlib.Error!Self {
     return Self{
@@ -183,6 +185,7 @@ pub fn init(allocator: mem.Allocator, shard_id: usize, total_shards: usize, sett
             settings.options.ratelimit_options.ratelimit_reset_interval,
             Self.calculateSafeRequests(settings.options.ratelimit_options),
         ),
+            .cache = settings.cache,
         .sharder_pool = settings.sharder_pool,
     };
 }
