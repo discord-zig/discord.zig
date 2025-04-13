@@ -20,12 +20,16 @@ const Shard = Discord.Shard;
 const Intents = Discord.Intents;
 
 const INTENTS = 53608447;
+const Cache = Discord.cache.TableTemplate{};
 
-fn ready(_: *Shard, payload: Discord.Ready) !void {
+fn ready(_: *anyopaque, payload: Discord.Ready) !void {
     std.debug.print("logged in as {s}\n", .{payload.user.username});
 }
 
-fn message_create(session: *Shard, message: Discord.Message) !void {
+fn message_create(shard_ptr: *anyopaque, message: Discord.Message) !void {
+    // set custom cache
+    const session: *Shard(Cache) = @ptrCast(@alignCast(shard_ptr));
+
     if (message.content != null and std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
         var result = try session.sendMessage(message.channel_id, .{ .content = "hi :)" });
         defer result.deinit();
@@ -48,6 +52,6 @@ pub fn main() !void {
         .run = .{ .message_create = &message_create, .ready = &ready },
         .log = .yes,
         .options = .{},
-        .cache = Discord.CacheTables.defaults(allocator),
+        .cache = Cache,
     });
 }

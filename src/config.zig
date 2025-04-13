@@ -25,6 +25,31 @@ pub const StoredUser = struct {
     banner: ?[]const u8 = null,
     avatar_decoration_data: ?AvatarDecorationData = null,
     clan: ?[]const u8 = null,
+
+    const Self = @This();
+
+    pub fn transform(default: @import("./structures/user.zig").User) Self {
+        return .{
+            .username = default.username,
+            .global_name = default.global_name,
+            .locale = default.locale,
+            .flags = default.flags,
+            .premium_type = default.premium_type,
+            .public_flags = default.public_flags,
+            .accent_color = default.accent_color,
+            .id = default.id,
+            .discriminator = default.discriminator,
+            .avatar = default.avatar,
+            .bot = default.bot,
+            .system = default.system,
+            .mfa_enabled = default.mfa_enabled,
+            .verified = default.verified,
+            .email = default.email,
+            .banner = default.banner,
+            .avatar_decoration_data = default.avatar_decoration_data,
+            .clan = default.clan,
+        };
+    }
 };
 
 const VerificationLevels = @import("./structures/shared.zig").VerificationLevels;

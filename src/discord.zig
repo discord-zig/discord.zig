@@ -312,7 +312,7 @@ pub const CacheLike = @import("cache.zig").CacheLike;
 pub const DefaultCache = @import("cache.zig").DefaultCache;
 
 pub const Permissions = @import("extra/permissions.zig").Permissions;
-pub const Shard = @import("shard.zig");
+pub const Shard = @import("shard.zig").Shard;
 pub const zjson = @compileError("Deprecated.");
 
 pub const Internal = @import("internal.zig");
@@ -320,8 +320,10 @@ const GatewayDispatchEvent = Internal.GatewayDispatchEvent;
 const GatewayBotInfo = Internal.GatewayBotInfo;
 const Log = Internal.Log;
 
-pub const Sharder = @import("core.zig");
-const SessionOptions = Sharder.SessionOptions;
+// sharder
+pub const Sharder = @import("sharder.zig").ShardManager;
+
+pub const cache = @import("cache.zig");
 
 pub const FetchReq = @import("http.zig").FetchReq;
 pub const FileData = @import("http.zig").FileData;
@@ -331,67 +333,99 @@ const mem = std.mem;
 const http = std.http;
 const json = std.json;
 
-const Self = @This();
+pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
+    return struct {
+        const Self = @This();
 
-allocator: mem.Allocator,
-sharder: Sharder,
-token: []const u8,
+        allocator: mem.Allocator,
+        sharder: Sharder(Table),
+        token: []const u8,
 
-pub fn init(allocator: mem.Allocator) Self {
-    return .{
-        .allocator = allocator,
-        .sharder = undefined,
-        .token = undefined,
+        pub fn init(allocator: mem.Allocator) Self {
+            return .{
+                .allocator = allocator,
+                .sharder = undefined,
+                .token = undefined,
+            };
+        }
+
+        pub fn deinit(self: *Self) void {
+            self.sharder.deinit();
+        }
+
+        pub fn start(self: *Self, settings: struct {
+            token: []const u8,
+            intents: Intents,
+            options: struct {
+                spawn_shard_delay: u64 = 5300,
+                total_shards: usize = 1,
+                shard_start: usize = 0,
+                shard_end: usize = 1,
+            },
+            run: GatewayDispatchEvent,
+            log: Log,
+            cache: cache.TableTemplate,
+        }) !void {
+            self.token = settings.token;
+            var req = FetchReq.init(self.allocator, settings.token);
+            defer req.deinit();
+
+            const res = try req.makeRequest(.GET, "/gateway/bot", null);
+            const body = try req.body.toOwnedSlice();
+            defer self.allocator.free(body);
+
+            // check status idk
+            if (res.status != http.Status.ok) {
+                @panic("we are cooked\n"); // check your token dumbass
+            }
+
+            const parsed = try json.parseFromSlice(GatewayBotInfo, self.allocator, body, .{});
+            defer parsed.deinit();
+
+            self.sharder = try Sharder(Table).init(self.allocator, .{
+                .token = settings.token,
+                    .intents = settings.intents,
+                .run = settings.run,
+                .options = Sharder(Table).SessionOptions{
+                    .info = parsed.value,
+                    .shard_start = settings.options.shard_start,
+                    .shard_end = @intCast(parsed.value.shards),
+                    .total_shards = @intCast(parsed.value.shards),
+                    .spawn_shard_delay = settings.options.spawn_shard_delay,
+                },
+                .log = settings.log,
+                .cache = settings.cache,
+            });
+
+            try self.sharder.spawnShards();
+        }
     };
 }
 
-pub fn deinit(self: *Self) void {
-    self.sharder.deinit();
+// defaults
+const DefaultTable = cache.TableTemplate{};
+pub const Session = CustomisedSession(DefaultTable);
+
+pub fn init(allocator: mem.Allocator) Session {
+    return Session.init(allocator);
 }
 
-pub fn start(self: *Self, settings: struct {
+pub fn deinit(self: *Session) void {
+    self.deinit();
+}
+
+pub fn start(self: *Session, settings: struct {
     token: []const u8,
-    intents: Self.Intents,
+    intents: Intents,
     options: struct {
         spawn_shard_delay: u64 = 5300,
         total_shards: usize = 1,
         shard_start: usize = 0,
         shard_end: usize = 1,
     },
-    run: GatewayDispatchEvent(*Shard),
+    run: GatewayDispatchEvent,
     log: Log,
-    cache: @import("cache.zig").CacheTables,
+    cache: cache.TableTemplate,
 }) !void {
-    self.token = settings.token;
-    var req = FetchReq.init(self.allocator, settings.token);
-    defer req.deinit();
-
-    const res = try req.makeRequest(.GET, "/gateway/bot", null);
-    const body = try req.body.toOwnedSlice();
-    defer self.allocator.free(body);
-
-    // check status idk
-    if (res.status != http.Status.ok) {
-        @panic("we are cooked\n"); // check your token dumbass
-    }
-
-    const parsed = try json.parseFromSlice(GatewayBotInfo, self.allocator, body, .{});
-    defer parsed.deinit();
-
-    self.sharder = try Sharder.init(self.allocator, .{
-        .token = settings.token,
-            .intents = settings.intents,
-        .run = settings.run,
-        .options = SessionOptions{
-            .info = parsed.value,
-            .shard_start = settings.options.shard_start,
-            .shard_end = @intCast(parsed.value.shards),
-            .total_shards = @intCast(parsed.value.shards),
-            .spawn_shard_delay = settings.options.spawn_shard_delay,
-        },
-        .log = settings.log,
-        .cache = settings.cache,
-    });
-
-    try self.sharder.spawnShards();
+    return self.start(settings);
 }

@@ -1,60 +1,80 @@
 const std = @import("std");
 
-// by default this caches everything
-// therefore we'll allow custom cache tables
-pub const CacheTables = struct {
-    const Snowflake = @import("./structures/snowflake.zig").Snowflake;
-    const Types = @import("./structures/types.zig");
-
-    const StoredUser = @import("./config.zig").StoredUser;
-    const StoredGuild = @import("./config.zig").StoredGuild;
-    const StoredChannel = @import("./config.zig").StoredChannel;
-    const StoredEmoji = @import("./config.zig").StoredEmoji;
-    const StoredMessage = @import("./config.zig").StoredMessage;
-    const StoredRole = @import("./config.zig").StoredRole;
-    const StoredSticker = @import("./config.zig").StoredSticker;
-    const StoredReaction = @import("./config.zig").StoredReaction;
-    const StoredMember = @import("./config.zig").StoredMember;
-
-    users: CacheLike(Snowflake, StoredUser),
-    guilds: CacheLike(Snowflake, StoredGuild),
-    channels: CacheLike(Snowflake, StoredChannel),
-    emojis: CacheLike(Snowflake, StoredEmoji),
-    messages: CacheLike(Snowflake, StoredMessage),
-    roles: CacheLike(Snowflake, StoredRole),
-    stickers: CacheLike(Snowflake, StoredSticker),
-    reactions: CacheLike(Snowflake, StoredReaction),
-    members: CacheLike(Snowflake, StoredMember),
-    threads: CacheLike(Snowflake, StoredChannel),
-
-    /// you can customize with your own cache
-    pub fn defaults(allocator: std.mem.Allocator) CacheTables {
-        var users = DefaultCache(Snowflake, StoredUser).init(allocator);
-        var guilds = DefaultCache(Snowflake, StoredGuild).init(allocator);
-        var channels = DefaultCache(Snowflake, StoredChannel).init(allocator);
-        var emojis = DefaultCache(Snowflake, StoredEmoji).init(allocator);
-        var messages = DefaultCache(Snowflake, StoredMessage).init(allocator);
-        var roles = DefaultCache(Snowflake, StoredRole).init(allocator);
-        var stickers = DefaultCache(Snowflake, StoredSticker).init(allocator);
-        var reactions = DefaultCache(Snowflake, StoredReaction).init(allocator);
-        var members = DefaultCache(Snowflake, StoredMember).init(allocator);
-        var threads = DefaultCache(Snowflake, StoredChannel).init(allocator);
-
-        return .{
-            .users = users.cache(),
-            .guilds = guilds.cache(),
-            .channels = channels.cache(),
-            .emojis = emojis.cache(),
-            .messages = messages.cache(),
-            .roles = roles.cache(),
-            .stickers = stickers.cache(),
-            .reactions = reactions.cache(),
-            .members = members.cache(),
-            .threads = threads.cache(),
-        };
-    }
+/// defaults are to be overridden by the end user
+/// otherwise, simply do TableTemplate{}
+/// this is a template for the cache tables
+pub const TableTemplate = struct {
+    comptime User: type = @import("./config.zig").StoredUser,
+    comptime Guild: type = @import("./config.zig").StoredGuild,
+    comptime Channel: type = @import("./config.zig").StoredChannel,
+    comptime Emoji: type = @import("./config.zig").StoredEmoji,
+    comptime Message: type = @import("./config.zig").StoredMessage,
+    comptime Role: type = @import("./config.zig").StoredRole,
+    comptime Sticker: type = @import("./config.zig").StoredSticker,
+    comptime Reaction: type = @import("./config.zig").StoredReaction,
+    comptime Member: type = @import("./config.zig").StoredMember,
+    comptime Thread: type = @import("./config.zig").StoredChannel,
 };
 
+// by default this caches everything
+// therefore we'll allow custom cache tables
+pub fn CacheTables(comptime Table: TableTemplate) type {
+    return struct {
+        const Snowflake = @import("./structures/snowflake.zig").Snowflake;
+
+        const StoredUser: type = Table.User;
+        const StoredGuild: type = Table.Guild;
+        const StoredChannel: type = Table.Channel;
+        const StoredEmoji: type = Table.Emoji;
+        const StoredMessage: type = Table.Message;
+        const StoredRole: type = Table.Role;
+        const StoredSticker: type = Table.Sticker;
+        const StoredReaction: type = Table.Reaction;
+        const StoredMember: type = Table.Member;
+        const StoredThread: type = Table.Thread;
+
+        users: CacheLike(Snowflake, StoredUser),
+        guilds: CacheLike(Snowflake, StoredGuild),
+        channels: CacheLike(Snowflake, StoredChannel),
+        emojis: CacheLike(Snowflake, StoredEmoji),
+        messages: CacheLike(Snowflake, StoredMessage),
+        roles: CacheLike(Snowflake, StoredRole),
+        stickers: CacheLike(Snowflake, StoredSticker),
+        reactions: CacheLike(Snowflake, StoredReaction),
+        members: CacheLike(Snowflake, StoredMember),
+        threads: CacheLike(Snowflake, StoredThread),
+
+        /// you can customize with your own cache
+        pub fn defaults(allocator: std.mem.Allocator) CacheTables(Table) {
+            var users = DefaultCache(Snowflake, StoredUser).init(allocator);
+            var guilds = DefaultCache(Snowflake, StoredGuild).init(allocator);
+            var channels = DefaultCache(Snowflake, StoredChannel).init(allocator);
+            var emojis = DefaultCache(Snowflake, StoredEmoji).init(allocator);
+            var messages = DefaultCache(Snowflake, StoredMessage).init(allocator);
+            var roles = DefaultCache(Snowflake, StoredRole).init(allocator);
+            var stickers = DefaultCache(Snowflake, StoredSticker).init(allocator);
+            var reactions = DefaultCache(Snowflake, StoredReaction).init(allocator);
+            var members = DefaultCache(Snowflake, StoredMember).init(allocator);
+            var threads = DefaultCache(Snowflake, StoredChannel).init(allocator);
+
+            return .{
+                .users = users.cache(),
+                .guilds = guilds.cache(),
+                .channels = channels.cache(),
+                .emojis = emojis.cache(),
+                .messages = messages.cache(),
+                .roles = roles.cache(),
+                .stickers = stickers.cache(),
+                .reactions = reactions.cache(),
+                .members = members.cache(),
+                .threads = threads.cache(),
+            };
+        }
+    };
+}
+
+/// this is an extensible cache, you may implement your own
+/// I recommend "zigache" to be used
 pub fn CacheLike(comptime K: type, comptime V: type) type {
     return struct {
         ptr: *anyopaque,
@@ -65,7 +85,7 @@ pub fn CacheLike(comptime K: type, comptime V: type) type {
         countFn: *const fn(*anyopaque) usize,
 
         pub fn put(self: CacheLike(K, V), key: K, value: V) !void {
-            self.putFn(self.ptr, key, value);
+            return self.putFn(self.ptr, key, value);
         }
 
         pub fn get(self: CacheLike(K, V), key: K) ?V {
@@ -130,10 +150,6 @@ pub fn CacheLike(comptime K: type, comptime V: type) type {
         }
     };
 }
-
-// make a cache that uses a hash map
-// must have putFn, getFn, removeFn, etc
-// must have a cache() function to return the interface
 
 pub fn DefaultCache(comptime K: type, comptime V: type) type {
     return struct {
