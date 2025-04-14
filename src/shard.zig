@@ -400,7 +400,20 @@ pub fn Shard(comptime Table: TableTemplate) type {
             //std.time.sleep(std.time.ms_per_s * 5);
             self.client = try Self._connect_ws(self.allocator, self.gatewayUrl());
 
-            self.readMessage(null) catch unreachable;
+            self.readMessage(null) catch |err| switch (err) {
+                // weird Windows error
+                // https://github.com/ziglang/zig/issues/21492
+                std.net.Stream.ReadError.NotOpenForReading, error.Closed => {
+                    std.debug.panic("Shard {d}: Stream closed unexpectedly", .{self.id}); // still check your intents
+                },
+                else => {
+                    // log that the connection died, but don't stop the bot
+                    std.debug.print("Shard {d} closed with error: {s}\n", .{self.id, @errorName(err)});
+                    std.debug.print("Attempting to reconnect...\n", .{});
+                    // reconnect
+                    self.reconnect() catch unreachable;
+                }
+            };
         }
 
         pub fn disconnect(self: *Self) CloseError!void {
@@ -449,11 +462,12 @@ pub fn Shard(comptime Table: TableTemplate) type {
 
                 // store ourselves in
 
-                if (std.meta.hasFn(Table.User, "transform")) {
-                    try self.cache_handler.users.put(ready.value.user.id, Table.User.transform(ready.value.user));
-                } else {
-                    @panic("User transform not implemented");
-                }
+                // TODO: fix this lmao
+                //if (std.meta.hasFn(Table.User, "transform")) {
+                //    try self.cache_handler.users.put(ready.value.user.id, Table.User.transform(ready.value.user));
+                //} else {
+                //    @panic("User transform not implemented");
+                //}
 
                 try event(self, ready.value);
             };
