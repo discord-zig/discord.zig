@@ -427,5 +427,8 @@ pub fn start(self: *Session, settings: struct {
     log: Log,
     cache: cache.TableTemplate,
 }) !void {
+    if (std.mem.startsWith(u8, settings.token, "Bot")) // save memory this way
+        std.debug.panic("Your token is invalid, try prepending Bot to it");
+
     return self.start(settings);
 }
