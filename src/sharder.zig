@@ -18,6 +18,7 @@ const Intents = @import("./structures/types.zig").Intents;
 const Snowflake = @import("./structures/snowflake.zig").Snowflake;
 const GatewayBotInfo = @import("internal.zig").GatewayBotInfo;
 const IdentifyProperties = @import("internal.zig").IdentifyProperties;
+const internalLogif = @import("internal.zig").logif;
 const ShardDetails = @import("internal.zig").ShardDetails;
 const ConnectQueue = @import("internal.zig").ConnectQueue;
 const GatewayDispatchEvent = @import("internal.zig").GatewayDispatchEvent;
@@ -254,10 +255,7 @@ pub fn ShardManager(comptime Table: TableTemplate) type {
         //
 
         inline fn logif(self: *Self, comptime format: []const u8, args: anytype) void {
-            switch (self.log) {
-                .yes => debug.info(format, args),
-                .no => {},
-            }
+            internalLogif(self.log, format, args);
         }
     };
 }
