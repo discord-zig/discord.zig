@@ -88,6 +88,13 @@ pub const debug = std.log.scoped(.@"discord.zig");
 
 pub const Log = union(enum) { yes, no };
 
+pub inline fn logif(log: Log, comptime format: []const u8, args: anytype) void {
+    switch (log) {
+        .yes => debug.info(format, args),
+        .no => {},
+    }
+}
+
 pub const default_identify_properties = IdentifyProperties{
     .os = @tagName(builtin.os.tag),
     .browser = "discord.zig",

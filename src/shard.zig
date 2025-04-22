@@ -35,6 +35,7 @@ const GatewayInfo = @import("internal.zig").GatewayInfo;
 const GatewayBotInfo = @import("internal.zig").GatewayBotInfo;
 const GatewaySessionStartLimit = @import("internal.zig").GatewaySessionStartLimit;
 const ShardDetails = @import("internal.zig").ShardDetails;
+const internalLogif = @import("internal.zig").logif;
 
 const Log = @import("internal.zig").Log;
 const GatewayDispatchEvent = @import("internal.zig").GatewayDispatchEvent;
@@ -250,9 +251,8 @@ pub fn Shard(comptime Table: TableTemplate) type {
                 std.debug.assert(std.json.validate(self.allocator, decompressed) catch
                     @panic("Invalid JSON"));
 
-
                 // for some reason std.json breaks when you use a generic
-                const GatewayPayloadType = struct{
+                const GatewayPayloadType = struct {
                     /// opcode for the payload
                     op: isize,
                     /// Event data
@@ -408,8 +408,8 @@ pub fn Shard(comptime Table: TableTemplate) type {
                 },
                 else => {
                     // log that the connection died, but don't stop the bot
-                    std.debug.print("Shard {d} closed with error: {s}\n", .{self.id, @errorName(err)});
-                    std.debug.print("Attempting to reconnect...\n", .{});
+                    self.logif("Shard {d} closed with error: {s}\n", .{self.id, @errorName(err)});
+                    self.logif("Attempting to reconnect...\n", .{});
                     // reconnect
                     self.reconnect() catch unreachable;
                 }
@@ -429,7 +429,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
                 .reason = reason, //[]const u8
             }) catch {
                 // log that the connection died, but don't stop the bot
-                std.debug.print("Shard {d} closed with error: {s} # {d}\n", .{self.id, reason, @intFromEnum(code)});
+                self.logif("Shard {d} closed with error: {s} # {d}\n", .{self.id, reason, @intFromEnum(code)});
             };
         }
 
@@ -446,10 +446,10 @@ pub fn Shard(comptime Table: TableTemplate) type {
 
         pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Value) void {
             // log to make sure this executes
-            std.debug.print("Shard {d} dispatching {s}\n", .{self.id, name});
+            self.logif("Shard {d} dispatching {s}\n", .{self.id, name});
 
             self.handleEvent(name, payload_ptr.*) catch |err| {
-                std.debug.print("Shard {d} error: {s}\n", .{self.id, @errorName(err)});
+                self.logif("Shard {d} error: {s}\n", .{self.id, @errorName(err)});
             };
         }
 
@@ -2903,7 +2903,8 @@ pub fn Shard(comptime Table: TableTemplate) type {
 
             return req.delete(path);
         }
-
+        inline fn logif(self: *Self, comptime format: []const u8, args: anytype) void {
+            internalLogif(self.log, format, args);
+        }
     };
 }
-
