@@ -32,7 +32,7 @@
     const InteractionResponseTypes = @import("shared.zig").InteractionResponseTypes;
     const InteractionContextType = @import("command.zig").InteractionContextType;
     const Entitlement = @import("monetization.zig").Entitlement;
-    const Record = @import("../json-helper.zig").Record;
+    const Record = @import("../utils/json.zig").Record;
 
     pub const Interaction = struct {
         /// Id of the interaction

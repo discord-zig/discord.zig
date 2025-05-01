@@ -28,29 +28,31 @@ const http = std.http;
 const zlib = @import("zlib");
 const json = @import("std").json;
 
-const Result = @import("errors.zig").Result;
+const Result = @import("../errors.zig").Result;
 
-const IdentifyProperties = @import("internal.zig").IdentifyProperties;
-const GatewayInfo = @import("internal.zig").GatewayInfo;
-const GatewayBotInfo = @import("internal.zig").GatewayBotInfo;
-const GatewaySessionStartLimit = @import("internal.zig").GatewaySessionStartLimit;
-const ShardDetails = @import("internal.zig").ShardDetails;
-const internalLogif = @import("internal.zig").logif;
+const IdentifyProperties = @import("util.zig").IdentifyProperties;
+const GatewayInfo = @import("util.zig").GatewayInfo;
+const GatewayBotInfo = @import("util.zig").GatewayBotInfo;
+const GatewaySessionStartLimit = @import("util.zig").GatewaySessionStartLimit;
+const ShardDetails = @import("util.zig").ShardDetails;
+const internalLogif = @import("../utils/core.zig").logif;
 
-const Log = @import("internal.zig").Log;
-const GatewayDispatchEvent = @import("internal.zig").GatewayDispatchEvent;
-const Bucket = @import("internal.zig").Bucket;
-const default_identify_properties = @import("internal.zig").default_identify_properties;
+const Log = @import("../utils/core.zig").Log;
+const GatewayDispatchEvent = @import("../utils/core.zig").GatewayDispatchEvent;
+const Bucket = @import("bucket.zig").Bucket;
+const default_identify_properties = @import("util.zig").default_identify_properties;
 
-const Types = @import("./structures/types.zig");
+const Types = @import("../structures/types.zig");
 const Opcode = Types.GatewayOpcodes;
-const Intents = Types.Intents;
+const Intents = @import("intents.zig").Intents;
 
 const Snowflake = Types.Snowflake;
-const FetchReq = @import("http.zig").FetchReq;
-const MakeRequestError = @import("http.zig").MakeRequestError;
+const FetchReq = @import("../http/http.zig").FetchReq;
+const MakeRequestError = @import("../http/http.zig").MakeRequestError;
 const Partial = Types.Partial;
-const TableTemplate = @import("cache.zig").TableTemplate;
+const TableTemplate = @import("../cache/cache.zig").TableTemplate;
+const CacheTables = @import("../cache/cache.zig").CacheTables;
+const FileData = @import("../http/http.zig").FileData;
 
 pub fn Shard(comptime Table: TableTemplate) type {
     return struct {
@@ -106,7 +108,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
         log: Log = .no,
 
         /// actual cache
-        cache_handler: *@import("cache.zig").CacheTables(Table),
+        cache_handler: *CacheTables(Table),
 
         pub fn resumable(self: *Self) bool {
             return self.resume_gateway_url != null and
@@ -160,7 +162,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
             options: ShardOptions,
             run: GatewayDispatchEvent,
             log: Log,
-            cache: *@import("cache.zig").CacheTables(Table),
+            cache: *CacheTables(Table),
             sharder_pool: ?*std.Thread.Pool = null,
         }) zlib.Error!Self {
             return Self{
@@ -933,7 +935,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
             /// the create message payload
             create_message: Partial(Types.CreateMessage),
             /// the files to send, must be one of FileData.type
-            files: []@import("http.zig").FileData,
+            files: []FileData,
         };
 
         /// same as `sendMessage` but acceps a files field
@@ -1448,7 +1450,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
 
         pub const StartThreadInForumOrMediaChannelWithFiles = struct {
             start_thread: Types.StartThreadFromMessage,
-            files: []@import("http.zig").FileData,
+            files: []FileData,
         };
 
         /// same as `startThreadInForumOrMediaChannel`
@@ -2862,7 +2864,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
             self: *Self,
             guild_id: Snowflake,
             sticker: Types.CreateModifyGuildSticker,
-            file: @import("http.zig").FileData,
+            file: FileData,
         ) RequestFailedError!Result(Types.Sticker) {
             var buf: [256]u8 = undefined;
             const path = try std.fmt.bufPrint(&buf, "/guilds/{d}/stickers", .{guild_id.into()});

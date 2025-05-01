@@ -4,23 +4,23 @@ const std = @import("std");
 /// otherwise, simply do TableTemplate{}
 /// this is a template for the cache tables
 pub const TableTemplate = struct {
-    comptime User: type = @import("./config.zig").StoredUser,
-    comptime Guild: type = @import("./config.zig").StoredGuild,
-    comptime Channel: type = @import("./config.zig").StoredChannel,
-    comptime Emoji: type = @import("./config.zig").StoredEmoji,
-    comptime Message: type = @import("./config.zig").StoredMessage,
-    comptime Role: type = @import("./config.zig").StoredRole,
-    comptime Sticker: type = @import("./config.zig").StoredSticker,
-    comptime Reaction: type = @import("./config.zig").StoredReaction,
-    comptime Member: type = @import("./config.zig").StoredMember,
-    comptime Thread: type = @import("./config.zig").StoredChannel,
+    comptime User: type = @import("../config.zig").StoredUser,
+    comptime Guild: type = @import("../config.zig").StoredGuild,
+    comptime Channel: type = @import("../config.zig").StoredChannel,
+    comptime Emoji: type = @import("../config.zig").StoredEmoji,
+    comptime Message: type = @import("../config.zig").StoredMessage,
+    comptime Role: type = @import("../config.zig").StoredRole,
+    comptime Sticker: type = @import("../config.zig").StoredSticker,
+    comptime Reaction: type = @import("../config.zig").StoredReaction,
+    comptime Member: type = @import("../config.zig").StoredMember,
+    comptime Thread: type = @import("../config.zig").StoredChannel,
 };
 
 // by default this caches everything
 // therefore we'll allow custom cache tables
 pub fn CacheTables(comptime Table: TableTemplate) type {
     return struct {
-        const Snowflake = @import("./structures/snowflake.zig").Snowflake;
+        const Snowflake = @import("../structures/snowflake.zig").Snowflake;
 
         const StoredUser: type = Table.User;
         const StoredGuild: type = Table.Guild;

@@ -4,6 +4,7 @@ const PremiumTypes = @import("./structures/shared.zig").PremiumTypes;
 const Snowflake = @import("./structures/snowflake.zig").Snowflake;
 const AvatarDecorationData = @import("./structures/user.zig").AvatarDecorationData;
 
+
 /// https://discord.com/developers/docs/resources/user#user-object
 /// modify this to your liking
 pub const StoredUser = struct {

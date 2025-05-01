@@ -20,7 +20,7 @@
     const OAuth2Scope = @import("shared.zig").OAuth2Scope;
     const Integration = @import("integration.zig").Integration;
     const Partial = @import("partial.zig").Partial;
-    const Record = @import("../json-helper.zig").Record;
+    const Record = @import("../utils/json.zig").Record;
 
     /// https://discord.com/developers/docs/resources/user#user-object
     pub const User = struct {

@@ -67,8 +67,6 @@ pub const PermissionStrings = @import("structures/types.zig").PermissionStrings;
 pub const GatewayCloseEventCodes = @import("structures/types.zig").GatewayCloseEventCodes;
 pub const GatewayOpcodes = @import("structures/types.zig").GatewayOpcodes;
 pub const GatewayDispatchEventNames = @import("structures/types.zig").GatewayDispatchEventNames;
-pub const GatewayIntents = @import("structures/types.zig").GatewayIntents;
-pub const Intents = @import("structures/types.zig").Intents;
 pub const InteractionResponseTypes = @import("structures/types.zig").InteractionResponseTypes;
 pub const SortOrderTypes = @import("structures/types.zig").SortOrderTypes;
 pub const ForumLayout = @import("structures/types.zig").ForumLayout;
@@ -307,26 +305,26 @@ pub const ApplicationWebhook = @import("structures/types.zig").ApplicationWebhoo
 pub const GatewayPayload = @import("structures/types.zig").GatewayPayload;
 // END USING NAMESPACE
 
-pub const CacheTables = @import("cache.zig").CacheTables;
-pub const CacheLike = @import("cache.zig").CacheLike;
-pub const DefaultCache = @import("cache.zig").DefaultCache;
+pub const CacheTables = @import("cache/cache.zig").CacheTables;
+pub const CacheLike = @import("cache/cache.zig").CacheLike;
+pub const DefaultCache = @import("cache/cache.zig").DefaultCache;
 
-pub const Permissions = @import("extra/permissions.zig").Permissions;
-pub const Shard = @import("shard.zig").Shard;
+pub const Permissions = @import("utils/permissions.zig").Permissions;
+pub const Shard = @import("shard/shard.zig").Shard;
 pub const zjson = @compileError("Deprecated.");
 
-pub const Internal = @import("internal.zig");
+pub const Internal = @import("utils/core.zig");
 const GatewayDispatchEvent = Internal.GatewayDispatchEvent;
-const GatewayBotInfo = Internal.GatewayBotInfo;
+const GatewayBotInfo = @import("shard/util.zig").GatewayBotInfo;
 const Log = Internal.Log;
 
 // sharder
-pub const Sharder = @import("sharder.zig").ShardManager;
+pub const Sharder = @import("shard/sharder.zig").ShardManager;
 
-pub const cache = @import("cache.zig");
+pub const cache = @import("cache/cache.zig");
 
-pub const FetchReq = @import("http.zig").FetchReq;
-pub const FileData = @import("http.zig").FileData;
+pub const FetchReq = @import("http/http.zig").FetchReq;
+pub const FileData = @import("http/http.zig").FileData;
 
 const std = @import("std");
 const mem = std.mem;
@@ -420,6 +418,9 @@ pub fn init(allocator: mem.Allocator) Session {
 pub fn deinit(self: *Session) void {
     self.deinit();
 }
+
+pub const GatewayIntents = @import("./shard/intents.zig").GatewayIntents;
+pub const Intents = @import("./shard/intents.zig").Intents;
 
 pub fn start(self: *Session, settings: struct {
     token: []const u8,

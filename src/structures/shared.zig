@@ -637,53 +637,53 @@ pub const GuildFeatures = enum {
     FEATURABLE,
     /// Guild has access to set an animated guild icon
     ANIMATED_ICON,
-        /// Guild has access to set a guild banner image
-        BANNER,
-        /// Guild has enabled the welcome screen
-        WELCOME_SCREEN_ENABLED,
-        /// Guild has enabled [Membership Screening](https://discord.com/developers/docs/resources/guild#membership-screening-object)
-        MEMBER_VERIFICATION_GATE_ENABLED,
-        /// Guild can be previewed before joining via Membership Screening or the directory
-        PREVIEW_ENABLED,
-        /// Guild has enabled ticketed events
-        TICKETED_EVENTS_ENABLED,
-        /// Guild has increased custom sticker slots
-        MORE_STICKERS,
-        /// Guild is able to set role icons
-        ROLE_ICONS,
-        /// Guild has role subscriptions that can be purchased.
-        ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE,
-        /// Guild has enabled role subscriptions.
-        ROLE_SUBSCRIPTIONS_ENABLED,
-        /// Guild has set up auto moderation rules
-        AUTO_MODERATION,
-        /// Guild has paused invites, preventing new users from joining
-        INVITES_DISABLED,
-        /// Guild has access to set an animated guild banner image
-        ANIMATED_BANNER,
-        /// Guild has disabled alerts for join raids in the configured safety alerts channel
-        RAID_ALERTS_DISABLED,
-        /// Guild is using the old permissions configuration behavior
-        APPLICATION_COMMAND_PERMISSIONS_V2,
-    };
+    /// Guild has access to set a guild banner image
+    BANNER,
+    /// Guild has enabled the welcome screen
+    WELCOME_SCREEN_ENABLED,
+    /// Guild has enabled [Membership Screening](https://discord.com/developers/docs/resources/guild#membership-screening-object)
+    MEMBER_VERIFICATION_GATE_ENABLED,
+    /// Guild can be previewed before joining via Membership Screening or the directory
+    PREVIEW_ENABLED,
+    /// Guild has enabled ticketed events
+    TICKETED_EVENTS_ENABLED,
+    /// Guild has increased custom sticker slots
+    MORE_STICKERS,
+    /// Guild is able to set role icons
+    ROLE_ICONS,
+    /// Guild has role subscriptions that can be purchased.
+    ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE,
+    /// Guild has enabled role subscriptions.
+    ROLE_SUBSCRIPTIONS_ENABLED,
+    /// Guild has set up auto moderation rules
+    AUTO_MODERATION,
+    /// Guild has paused invites, preventing new users from joining
+    INVITES_DISABLED,
+    /// Guild has access to set an animated guild banner image
+    ANIMATED_BANNER,
+    /// Guild has disabled alerts for join raids in the configured safety alerts channel
+    RAID_ALERTS_DISABLED,
+    /// Guild is using the old permissions configuration behavior
+    APPLICATION_COMMAND_PERMISSIONS_V2,
+};
 
-    /// https://discord.com/developers/docs/resources/guild#guild-object-mfa-level
-    pub const MfaLevels = enum {
-        /// Guild has no MFA/2FA requirement for moderation actions
-        None,
-        /// Guild has a 2FA requirement for moderation actions
-        Elevated,
-    };
+/// https://discord.com/developers/docs/resources/guild#guild-object-mfa-level
+pub const MfaLevels = enum {
+    /// Guild has no MFA/2FA requirement for moderation actions
+    None,
+    /// Guild has a 2FA requirement for moderation actions
+    Elevated,
+};
 
-    /// https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags
-    pub const SystemChannelFlags = packed struct {
-        pub fn toRaw(self: SystemChannelFlags) u8 {
-            return @bitCast(self);
-        }
+/// https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags
+pub const SystemChannelFlags = packed struct {
+    pub fn toRaw(self: SystemChannelFlags) u8 {
+        return @bitCast(self);
+    }
 
-        pub fn fromRaw(raw: u8) SystemChannelFlags {
-            return @bitCast(raw);
-        }
+    pub fn fromRaw(raw: u8) SystemChannelFlags {
+        return @bitCast(raw);
+    }
 
     pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
         const value = try std.json.innerParse(std.json.Value, allocator, src, .{
@@ -701,46 +701,46 @@ pub const GuildFeatures = enum {
     }
 
 
-        /// Suppress member join notifications
-        SuppressJoinNotifications: bool = false,
-        /// Suppress server boost notifications
-        SuppressPremiumSubscriptions: bool = false,
-        /// Suppress server setup tips
-        SuppressGuildReminderNotifications: bool = false,
-        /// Hide member join sticker reply buttons
-        SuppressJoinNotificationReplies: bool = false,
-        _pad: u4 = 0,
-    };
+    /// Suppress member join notifications
+    SuppressJoinNotifications: bool = false,
+    /// Suppress server boost notifications
+    SuppressPremiumSubscriptions: bool = false,
+    /// Suppress server setup tips
+    SuppressGuildReminderNotifications: bool = false,
+    /// Hide member join sticker reply buttons
+    SuppressJoinNotificationReplies: bool = false,
+    _pad: u4 = 0,
+};
 
-    /// https://discord.com/developers/docs/resources/guild#guild-object-premium-tier
-    pub const PremiumTiers = enum {
-        /// Guild has not unlocked any Server Boost perks
-        None,
-        /// Guild has unlocked Server Boost level 1 perks
-        Tier1,
-        /// Guild has unlocked Server Boost level 2 perks
-        Tier2,
-        /// Guild has unlocked Server Boost level 3 perks
-        Tier3,
-    };
+/// https://discord.com/developers/docs/resources/guild#guild-object-premium-tier
+pub const PremiumTiers = enum {
+    /// Guild has not unlocked any Server Boost perks
+    None,
+    /// Guild has unlocked Server Boost level 1 perks
+    Tier1,
+    /// Guild has unlocked Server Boost level 2 perks
+    Tier2,
+    /// Guild has unlocked Server Boost level 3 perks
+    Tier3,
+};
 
-    /// https://discord.com/developers/docs/resources/guild#guild-object-guild-nsfw-level
-    pub const GuildNsfwLevel = enum {
-        Default,
-        Explicit,
-        Safe,
-        AgeRestricted,
-    };
+/// https://discord.com/developers/docs/resources/guild#guild-object-guild-nsfw-level
+pub const GuildNsfwLevel = enum {
+    Default,
+    Explicit,
+    Safe,
+    AgeRestricted,
+};
 
-    /// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
-    pub const ChannelTypes = packed struct {
-        pub fn toRaw(self: ChannelTypes) u32 {
-            return @bitCast(self);
-        }
+/// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
+pub const ChannelTypes = packed struct {
+    pub fn toRaw(self: ChannelTypes) u32 {
+        return @bitCast(self);
+    }
 
-        pub fn fromRaw(raw: u32) ChannelTypes {
-            return @bitCast(raw);
-        }
+    pub fn fromRaw(raw: u32) ChannelTypes {
+        return @bitCast(raw);
+    }
 
     pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
         const value = try std.json.innerParse(std.json.Value, allocator, src, .{
@@ -758,328 +758,328 @@ pub const GuildFeatures = enum {
     }
 
 
-        /// A text channel within a server
-        GuildText: bool = false,
-        /// A direct message between users
-        DM: bool = false,
-        /// A voice channel within a server
-        GuildVoice: bool = false,
-        /// A direct message between multiple users
-        GroupDm: bool = false,
-        /// An organizational category that contains up to 50 channels
-        GuildCategory: bool = false,
-        /// A channel that users can follow and crosspost into their own server
-        GuildAnnouncement: bool = false,
-        _pad: u4 = 0,
-        /// A temporary sub-channel within a GUILD_ANNOUNCEMENT channel
-        AnnouncementThread: bool = false,
-        /// A temporary sub-channel within a GUILD_TEXT or GUILD_FORUM channel
-        PublicThread: bool = false,
-        /// A temporary sub-channel within a GUILD_TEXT channel that is only viewable by those invited and those with the MANAGE_THREADS permission
-        PrivateThread: bool = false,
-        /// A voice channel for hosting events with an audience
-        GuildStageVoice: bool = false,
-        /// A channel in a hub containing the listed servers
-        GuildDirectory: bool = false,
-        /// A channel which can only contains threads
-        GuildForum: bool = false,
-        /// Channel that can only contain threads, similar to GUILD_FORUM channels
-        GuildMedia: bool = false,
-        _pad1: u15 = 0,
-    };
+    /// A text channel within a server
+    GuildText: bool = false,
+    /// A direct message between users
+    DM: bool = false,
+    /// A voice channel within a server
+    GuildVoice: bool = false,
+    /// A direct message between multiple users
+    GroupDm: bool = false,
+    /// An organizational category that contains up to 50 channels
+    GuildCategory: bool = false,
+    /// A channel that users can follow and crosspost into their own server
+    GuildAnnouncement: bool = false,
+    _pad: u4 = 0,
+    /// A temporary sub-channel within a GUILD_ANNOUNCEMENT channel
+    AnnouncementThread: bool = false,
+    /// A temporary sub-channel within a GUILD_TEXT or GUILD_FORUM channel
+    PublicThread: bool = false,
+    /// A temporary sub-channel within a GUILD_TEXT channel that is only viewable by those invited and those with the MANAGE_THREADS permission
+    PrivateThread: bool = false,
+    /// A voice channel for hosting events with an audience
+    GuildStageVoice: bool = false,
+    /// A channel in a hub containing the listed servers
+    GuildDirectory: bool = false,
+    /// A channel which can only contains threads
+    GuildForum: bool = false,
+    /// Channel that can only contain threads, similar to GUILD_FORUM channels
+    GuildMedia: bool = false,
+    _pad1: u15 = 0,
+};
 
-    pub const OverwriteTypes = enum {
-        Role,
-        Member,
-    };
+pub const OverwriteTypes = enum {
+    Role,
+    Member,
+};
 
-    pub const VideoQualityModes = enum(u4) {
-        /// Discord chooses the quality for optimal performance
-        Auto = 1,
-        /// 720p
-        Full,
-    };
+pub const VideoQualityModes = enum(u4) {
+    /// Discord chooses the quality for optimal performance
+    Auto = 1,
+    /// 720p
+    Full,
+};
 
-    /// https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
-    pub const ActivityTypes = enum(u4) {
-        Playing = 0,
-        Streaming = 1,
-        Listening = 2,
-        Watching = 3,
-        Custom = 4,
-        Competing = 5,
-    };
+/// https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types
+pub const ActivityTypes = enum(u4) {
+    Playing = 0,
+    Streaming = 1,
+    Listening = 2,
+    Watching = 3,
+    Custom = 4,
+    Competing = 5,
+};
 
-    /// https://discord.com/developers/docs/resources/channel#message-object-message-types
-    pub const MessageTypes = enum(u8) {
-        Default,
-        RecipientAdd,
-        RecipientRemove,
-        Call,
-        ChannelNameChange,
-        ChannelIconChange,
-        ChannelPinnedMessage,
-        UserJoin,
-        GuildBoost,
-        GuildBoostTier1,
-        GuildBoostTier2,
-        GuildBoostTier3,
-        ChannelFollowAdd,
-        GuildDiscoveryDisqualified = 14,
-        GuildDiscoveryRequalified,
-        GuildDiscoveryGracePeriodInitialWarning,
-        GuildDiscoveryGracePeriodFinalWarning,
-        ThreadCreated,
-        Reply,
-        ChatInputCommand,
-        ThreadStarterMessage,
-        GuildInviteReminder,
-        ContextMenuCommand,
-        AutoModerationAction,
-        RoleSubscriptionPurchase,
-        InteractionPremiumUpsell,
-        StageStart,
-        StageEnd,
-        StageSpeaker,
-        StageTopic = 31,
-        GuildApplicationPremiumSubscription,
-        GuildIncidentAlertModeEnabled = 36,
-        GuildIncidentAlertModeDisabled,
-        GuildIncidentReportRaid,
-        GuildIncidentReportFalseAlarm,
-        PurchaseNotification = 44,
-        PollResult = 46,
-    };
+/// https://discord.com/developers/docs/resources/channel#message-object-message-types
+pub const MessageTypes = enum(u8) {
+    Default,
+    RecipientAdd,
+    RecipientRemove,
+    Call,
+    ChannelNameChange,
+    ChannelIconChange,
+    ChannelPinnedMessage,
+    UserJoin,
+    GuildBoost,
+    GuildBoostTier1,
+    GuildBoostTier2,
+    GuildBoostTier3,
+    ChannelFollowAdd,
+    GuildDiscoveryDisqualified = 14,
+    GuildDiscoveryRequalified,
+    GuildDiscoveryGracePeriodInitialWarning,
+    GuildDiscoveryGracePeriodFinalWarning,
+    ThreadCreated,
+    Reply,
+    ChatInputCommand,
+    ThreadStarterMessage,
+    GuildInviteReminder,
+    ContextMenuCommand,
+    AutoModerationAction,
+    RoleSubscriptionPurchase,
+    InteractionPremiumUpsell,
+    StageStart,
+    StageEnd,
+    StageSpeaker,
+    StageTopic = 31,
+    GuildApplicationPremiumSubscription,
+    GuildIncidentAlertModeEnabled = 36,
+    GuildIncidentAlertModeDisabled,
+    GuildIncidentReportRaid,
+    GuildIncidentReportFalseAlarm,
+    PurchaseNotification = 44,
+    PollResult = 46,
+};
 
-    /// https://discord.com/developers/docs/resources/channel#message-object-message-activity-types
-    pub const MessageActivityTypes = enum(u4) {
-        Join = 1,
-        Spectate = 2,
-        Listen = 3,
-        JoinRequest = 5,
-    };
+/// https://discord.com/developers/docs/resources/channel#message-object-message-activity-types
+pub const MessageActivityTypes = enum(u4) {
+    Join = 1,
+    Spectate = 2,
+    Listen = 3,
+    JoinRequest = 5,
+};
 
-    /// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
-    pub const StickerTypes = enum(u4) {
-        /// an official sticker in a pack
-        Standard = 1,
-        /// a sticker uploaded to a guild for the guild's members
-        Guild = 2,
-    };
+/// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+pub const StickerTypes = enum(u4) {
+    /// an official sticker in a pack
+    Standard = 1,
+    /// a sticker uploaded to a guild for the guild's members
+    Guild = 2,
+};
 
-    /// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
-    pub const StickerFormatTypes = enum(u4) {
-        Png = 1,
-        APng,
-        Lottie,
-        Gif,
-    };
+/// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+pub const StickerFormatTypes = enum(u4) {
+    Png = 1,
+    APng,
+    Lottie,
+    Gif,
+};
 
-    /// https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype
-    pub const InteractionTypes = enum(u4) {
-        Ping = 1,
-        ApplicationCommand = 2,
-        MessageComponent = 3,
-        ApplicationCommandAutocomplete = 4,
-        ModalSubmit = 5,
-    };
+/// https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype
+pub const InteractionTypes = enum(u4) {
+    Ping = 1,
+    ApplicationCommand = 2,
+    MessageComponent = 3,
+    ApplicationCommandAutocomplete = 4,
+    ModalSubmit = 5,
+};
 
-    /// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptiontype
-    pub const ApplicationCommandOptionTypes = enum(u4) {
-        SubCommand = 1,
-        SubCommandGroup,
-        String,
-        Integer,
-        Boolean,
-        User,
-        Channel,
-        Role,
-        Mentionable,
-        Number,
-        Attachment,
-    };
+/// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptiontype
+pub const ApplicationCommandOptionTypes = enum(u4) {
+    SubCommand = 1,
+    SubCommandGroup,
+    String,
+    Integer,
+    Boolean,
+    User,
+    Channel,
+    Role,
+    Mentionable,
+    Number,
+    Attachment,
+};
 
-    /// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
-    pub const AuditLogEvents = enum(u4) {
-        /// Server settings were updated
-        GuildUpdate = 1,
-        /// Channel was created
-        ChannelCreate = 10,
-        /// Channel settings were updated
-        ChannelUpdate,
-        /// Channel was deleted
-        ChannelDelete,
-        /// Permission overwrite was added to a channel
-        ChannelOverwriteCreate,
-        /// Permission overwrite was updated for a channel
-        ChannelOverwriteUpdate,
-        /// Permission overwrite was deleted from a channel
-        ChannelOverwriteDelete,
-        /// Member was removed from server
-        MemberKick = 20,
-        /// Members were pruned from server
-        MemberPrune,
-        /// Member was banned from server
-        MemberBanAdd,
-        /// Server ban was lifted for a member
-        MemberBanRemove,
-        /// Member was updated in server
-        MemberUpdate,
-        /// Member was added or removed from a role
-        MemberRoleUpdate,
-        /// Member was moved to a different voice channel
-        MemberMove,
-        /// Member was disconnected from a voice channel
-        MemberDisconnect,
-        /// Bot user was added to server
-        BotAdd,
-        /// Role was created
-        RoleCreate = 30,
-        /// Role was edited
-        RoleUpdate,
-        /// Role was deleted
-        RoleDelete,
-        /// Server invite was created
-        InviteCreate = 40,
-        /// Server invite was updated
-        InviteUpdate,
-        /// Server invite was deleted
-        InviteDelete,
-        /// Webhook was created
-        WebhookCreate = 50,
-        /// Webhook properties or channel were updated
-        WebhookUpdate,
-        /// Webhook was deleted
-        WebhookDelete,
-        /// Emoji was created
-        EmojiCreate = 60,
-        /// Emoji name was updated
-        EmojiUpdate,
-        /// Emoji was deleted
-        EmojiDelete,
-        /// Single message was deleted
-        MessageDelete = 72,
-        /// Multiple messages were deleted
-        MessageBulkDelete,
-        /// Messaged was pinned to a channel
-        MessagePin,
-        /// Message was unpinned from a channel
-        MessageUnpin,
-        /// App was added to server
-        IntegrationCreate = 80,
-        /// App was updated (as an example, its scopes were updated)
-        IntegrationUpdate,
-        /// App was removed from server
-        IntegrationDelete,
-        /// Stage instance was created (stage channel becomes live)
-        StageInstanceCreate,
-        /// Stage instace details were updated
-        StageInstanceUpdate,
-        /// Stage instance was deleted (stage channel no longer live)
-        StageInstanceDelete,
-        /// Sticker was created
-        StickerCreate = 90,
-        /// Sticker details were updated
-        StickerUpdate,
-        /// Sticker was deleted
-        StickerDelete,
-        /// Event was created
-        GuildScheduledEventCreate = 100,
-        /// Event was updated
-        GuildScheduledEventUpdate,
-        /// Event was cancelled
-        GuildScheduledEventDelete,
-        /// Thread was created in a channel
-        ThreadCreate = 110,
-        /// Thread was updated
-        ThreadUpdate,
-        /// Thread was deleted
-        ThreadDelete,
-        /// Permissions were updated for a command
-        ApplicationCommandPermissionUpdate = 121,
-        /// Auto moderation rule was created
-        AutoModerationRuleCreate = 140,
-        /// Auto moderation rule was updated
-        AutoModerationRuleUpdate,
-        /// Auto moderation rule was deleted
-        AutoModerationRuleDelete,
-        /// Message was blocked by AutoMod according to a rule.
-        AutoModerationBlockMessage,
-        /// Message was flagged by AutoMod
-        AudoModerationFlagMessage,
-        /// Member was timed out by AutoMod
-        AutoModerationMemberTimedOut,
-        /// Creator monetization request was created
-        CreatorMonetizationRequestCreated = 150,
-        /// Creator monetization terms were accepted
-        CreatorMonetizationTermsAccepted,
-        /// Guild Onboarding Question was created
-        OnBoardingPromptCreate = 163,
-        /// Guild Onboarding Question was updated
-        OnBoardingPromptUpdate,
-        /// Guild Onboarding Question was deleted
-        OnBoardingPromptDelete,
-        /// Guild Onboarding was created
-        OnBoardingCreate,
-        /// Guild Onboarding was updated
-        OnBoardingUpdate,
-        /// Guild Server Guide was created
-        HomeSettingsCreate = 190,
-        /// Guild Server Guide was updated
-        HomeSettingsUpdate,
-    };
+/// https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
+pub const AuditLogEvents = enum(u4) {
+    /// Server settings were updated
+    GuildUpdate = 1,
+    /// Channel was created
+    ChannelCreate = 10,
+    /// Channel settings were updated
+    ChannelUpdate,
+    /// Channel was deleted
+    ChannelDelete,
+    /// Permission overwrite was added to a channel
+    ChannelOverwriteCreate,
+    /// Permission overwrite was updated for a channel
+    ChannelOverwriteUpdate,
+    /// Permission overwrite was deleted from a channel
+    ChannelOverwriteDelete,
+    /// Member was removed from server
+    MemberKick = 20,
+    /// Members were pruned from server
+    MemberPrune,
+    /// Member was banned from server
+    MemberBanAdd,
+    /// Server ban was lifted for a member
+    MemberBanRemove,
+    /// Member was updated in server
+    MemberUpdate,
+    /// Member was added or removed from a role
+    MemberRoleUpdate,
+    /// Member was moved to a different voice channel
+    MemberMove,
+    /// Member was disconnected from a voice channel
+    MemberDisconnect,
+    /// Bot user was added to server
+    BotAdd,
+    /// Role was created
+    RoleCreate = 30,
+    /// Role was edited
+    RoleUpdate,
+    /// Role was deleted
+    RoleDelete,
+    /// Server invite was created
+    InviteCreate = 40,
+    /// Server invite was updated
+    InviteUpdate,
+    /// Server invite was deleted
+    InviteDelete,
+    /// Webhook was created
+    WebhookCreate = 50,
+    /// Webhook properties or channel were updated
+    WebhookUpdate,
+    /// Webhook was deleted
+    WebhookDelete,
+    /// Emoji was created
+    EmojiCreate = 60,
+    /// Emoji name was updated
+    EmojiUpdate,
+    /// Emoji was deleted
+    EmojiDelete,
+    /// Single message was deleted
+    MessageDelete = 72,
+    /// Multiple messages were deleted
+    MessageBulkDelete,
+    /// Messaged was pinned to a channel
+    MessagePin,
+    /// Message was unpinned from a channel
+    MessageUnpin,
+    /// App was added to server
+    IntegrationCreate = 80,
+    /// App was updated (as an example, its scopes were updated)
+    IntegrationUpdate,
+    /// App was removed from server
+    IntegrationDelete,
+    /// Stage instance was created (stage channel becomes live)
+    StageInstanceCreate,
+    /// Stage instace details were updated
+    StageInstanceUpdate,
+    /// Stage instance was deleted (stage channel no longer live)
+    StageInstanceDelete,
+    /// Sticker was created
+    StickerCreate = 90,
+    /// Sticker details were updated
+    StickerUpdate,
+    /// Sticker was deleted
+    StickerDelete,
+    /// Event was created
+    GuildScheduledEventCreate = 100,
+    /// Event was updated
+    GuildScheduledEventUpdate,
+    /// Event was cancelled
+    GuildScheduledEventDelete,
+    /// Thread was created in a channel
+    ThreadCreate = 110,
+    /// Thread was updated
+    ThreadUpdate,
+    /// Thread was deleted
+    ThreadDelete,
+    /// Permissions were updated for a command
+    ApplicationCommandPermissionUpdate = 121,
+    /// Auto moderation rule was created
+    AutoModerationRuleCreate = 140,
+    /// Auto moderation rule was updated
+    AutoModerationRuleUpdate,
+    /// Auto moderation rule was deleted
+    AutoModerationRuleDelete,
+    /// Message was blocked by AutoMod according to a rule.
+    AutoModerationBlockMessage,
+    /// Message was flagged by AutoMod
+    AudoModerationFlagMessage,
+    /// Member was timed out by AutoMod
+    AutoModerationMemberTimedOut,
+    /// Creator monetization request was created
+    CreatorMonetizationRequestCreated = 150,
+    /// Creator monetization terms were accepted
+    CreatorMonetizationTermsAccepted,
+    /// Guild Onboarding Question was created
+    OnBoardingPromptCreate = 163,
+    /// Guild Onboarding Question was updated
+    OnBoardingPromptUpdate,
+    /// Guild Onboarding Question was deleted
+    OnBoardingPromptDelete,
+    /// Guild Onboarding was created
+    OnBoardingCreate,
+    /// Guild Onboarding was updated
+    OnBoardingUpdate,
+    /// Guild Server Guide was created
+    HomeSettingsCreate = 190,
+    /// Guild Server Guide was updated
+    HomeSettingsUpdate,
+};
 
-    pub const ScheduledEventPrivacyLevel = enum(u4) {
-        /// the scheduled event is only accessible to guild members
-        GuildOnly = 2,
-    };
+pub const ScheduledEventPrivacyLevel = enum(u4) {
+    /// the scheduled event is only accessible to guild members
+    GuildOnly = 2,
+};
 
-    pub const ScheduledEventEntityType = enum(u4) {
-        StageInstance = 1,
-        Voice,
-        External,
-    };
+pub const ScheduledEventEntityType = enum(u4) {
+    StageInstance = 1,
+    Voice,
+    External,
+};
 
-    pub const ScheduledEventStatus = enum(u4) {
-        Scheduled = 1,
-        Active,
-        Completed,
-        Canceled,
-    };
+pub const ScheduledEventStatus = enum(u4) {
+    Scheduled = 1,
+    Active,
+    Completed,
+    Canceled,
+};
 
-    /// https://discord.com/developers/docs/resources/invite#invite-object-target-user-types
-    pub const TargetTypes = enum(u4) {
-        Stream = 1,
-        EmbeddedApplication,
-    };
+/// https://discord.com/developers/docs/resources/invite#invite-object-target-user-types
+pub const TargetTypes = enum(u4) {
+    Stream = 1,
+    EmbeddedApplication,
+};
 
-    pub const ApplicationCommandTypes = enum(u4) {
-        /// A text-based command that shows up when a user types `/`
-        ChatInput = 1,
-        /// A UI-based command that shows up when you right click or tap on a user
-        User,
-        /// A UI-based command that shows up when you right click or tap on a message
-        Message,
-        /// A UI-based command that represents the primary way to invoke an app's Activity
-        PrimaryEntryPoint,
-    };
+pub const ApplicationCommandTypes = enum(u4) {
+    /// A text-based command that shows up when a user types `/`
+    ChatInput = 1,
+    /// A UI-based command that shows up when you right click or tap on a user
+    User,
+    /// A UI-based command that shows up when you right click or tap on a message
+    Message,
+    /// A UI-based command that represents the primary way to invoke an app's Activity
+    PrimaryEntryPoint,
+};
 
-    pub const ApplicationCommandPermissionTypes = enum(u4) {
-        Role = 1,
-        User,
-        Channel,
-    };
+pub const ApplicationCommandPermissionTypes = enum(u4) {
+    Role = 1,
+    User,
+    Channel,
+};
 
-    /// https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
-    /// Permissions v2
-    pub const BitwisePermissionFlags = packed struct {
-        pub fn toRaw(self: BitwisePermissionFlags) u64 {
-            return @bitCast(self);
-        }
+/// https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
+/// Permissions v2
+pub const BitwisePermissionFlags = packed struct {
+    pub fn toRaw(self: BitwisePermissionFlags) u64 {
+        return @bitCast(self);
+    }
 
-        pub fn fromRaw(raw: u64) BitwisePermissionFlags {
-            return @bitCast(raw);
-        }
+    pub fn fromRaw(raw: u64) BitwisePermissionFlags {
+        return @bitCast(raw);
+    }
 
     pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
         const value = try std.json.innerParse(std.json.Value, allocator, src, .{
@@ -1097,569 +1097,394 @@ pub const GuildFeatures = enum {
     }
 
 
-        /// Allows creation of instant invites
-        CREATE_INSTANT_INVITE: bool = false,
-        /// Allows kicking members
-        KICK_MEMBERS: bool = false,
-        /// Allows banning members
-        BAN_MEMBERS: bool = false,
-        /// Allows all permissions and bypasses channel permission overwrites
-        ADMINISTRATOR: bool = false,
-        /// Allows management and editing of channels
-        MANAGE_CHANNELS: bool = false,
-        /// Allows management and editing of the guild
-        MANAGE_GUILD: bool = false,
-        /// Allows for the addition of reactions to messages
-        ADD_REACTIONS: bool = false,
-        /// Allows for viewing of audit logs
-        VIEW_AUDIT_LOG: bool = false,
-        /// Allows for using priority speaker in a voice channel
-        PRIORITY_SPEAKER: bool = false,
-        /// Allows the user to go live
-        STREAM: bool = false,
-        /// Allows guild members to view a channel, which includes reading messages in text channels and joining voice channels
-        VIEW_CHANNEL: bool = false,
-        /// Allows for sending messages in a channel. (does not allow sending messages in threads)
-        SEND_MESSAGES: bool = false,
-        /// Allows for sending of /tts messages
-        SEND_TTS_MESSAGES: bool = false,
-        /// Allows for deletion of other users messages
-        MANAGE_MESSAGES: bool = false,
-        /// Links sent by users with this permission will be auto-embedded
-        EMBED_LINKS: bool = false,
-        /// Allows for uploading images and files
-        ATTACH_FILES: bool = false,
-        /// Allows for reading of message history
-        READ_MESSAGE_HISTORY: bool = false,
-        /// Allows for using the \@everyone tag to notify all users in a channel, and the \@here tag to notify all online users in a channel
-        MENTION_EVERYONE: bool = false,
-        /// Allows the usage of custom emojis from other servers
-        USE_EXTERNAL_EMOJIS: bool = false,
-        /// Allows for viewing guild insights
-        VIEW_GUILD_INSIGHTS: bool = false,
-        /// Allows for joining of a voice channel
-        CONNECT: bool = false,
-        /// Allows for speaking in a voice channel
-        SPEAK: bool = false,
-        /// Allows for muting members in a voice channel
-        MUTE_MEMBERS: bool = false,
-        /// Allows for deafening of members in a voice channel
-        DEAFEN_MEMBERS: bool = false,
-        /// Allows for moving of members between voice channels
-        MOVE_MEMBERS: bool = false,
-        /// Allows for using voice-activity-detection in a voice channel
-        USE_VAD: bool = false,
-        /// Allows for modification of own nickname
-        CHANGE_NICKNAME: bool = false,
-        /// Allows for modification of other users nicknames
-        MANAGE_NICKNAMES: bool = false,
-        /// Allows management and editing of roles
-        MANAGE_ROLES: bool = false,
-        /// Allows management and editing of webhooks
-        MANAGE_WEBHOOKS: bool = false,
-        /// Allows for editing and deleting emojis, stickers, and soundboard sounds created by all users
-        MANAGE_GUILD_EXPRESSIONS: bool = false,
-        /// Allows members to use application commands in text channels
-        USE_SLASH_COMMANDS: bool = false,
-        /// Allows for requesting to speak in stage channels.
-        REQUEST_TO_SPEAK: bool = false,
-        /// Allows for editing and deleting scheduled events created by all users
-        MANAGE_EVENTS: bool = false,
-        /// Allows for deleting and archiving threads, and viewing all private threads
-        MANAGE_THREADS: bool = false,
-        /// Allows for creating public and announcement threads
-        CREATE_PUBLIC_THREADS: bool = false,
-        /// Allows for creating private threads
-        CREATE_PRIVATE_THREADS: bool = false,
-        /// Allows the usage of custom stickers from other servers
-        USE_EXTERNAL_STICKERS: bool = false,
-        /// Allows for sending messages in threads
-        SEND_MESSAGES_IN_THREADS: bool = false,
-        /// Allows for launching activities (applications with the `EMBEDDED` flag) in a voice channel.
-        USE_EMBEDDED_ACTIVITIES: bool = false,
-        /// Allows for timing out users to prevent them from sending or reacting to messages in chat and threads, and from speaking in voice and stage channels
-        MODERATE_MEMBERS: bool = false,
-        /// Allows for viewing role subscription insights.
-        VIEW_CREATOR_MONETIZATION_ANALYTICS: bool = false,
-        /// Allows for using soundboard in a voice channel.
-        USE_SOUNDBOARD: bool = false,
-        /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user
-        CREATE_GUILD_EXPRESSIONS: bool = false,
-        /// Allows for creating scheduled events, and editing and deleting those created by the current user
-        CREATE_EVENTS: bool = false,
-        /// Allows the usage of custom soundboards sounds from other servers
-        USE_EXTERNAL_SOUNDS: bool = false,
-        /// Allows sending voice messages
-        SEND_VOICE_MESSAGES: bool = false,
-        /// Allows sending polls
-        SEND_POLLS: bool = false,
-        /// Allows user-installed apps to send public responses. When disabled, users will still be allowed to use their apps but the responses will be ephemeral. This only applies to apps not also installed to the server.
-        USE_EXTERNAL_APPS: bool = false,
-        _pad: u15 = 0,
-    };
+    /// Allows creation of instant invites
+    CREATE_INSTANT_INVITE: bool = false,
+    /// Allows kicking members
+    KICK_MEMBERS: bool = false,
+    /// Allows banning members
+    BAN_MEMBERS: bool = false,
+    /// Allows all permissions and bypasses channel permission overwrites
+    ADMINISTRATOR: bool = false,
+    /// Allows management and editing of channels
+    MANAGE_CHANNELS: bool = false,
+    /// Allows management and editing of the guild
+    MANAGE_GUILD: bool = false,
+    /// Allows for the addition of reactions to messages
+    ADD_REACTIONS: bool = false,
+    /// Allows for viewing of audit logs
+    VIEW_AUDIT_LOG: bool = false,
+    /// Allows for using priority speaker in a voice channel
+    PRIORITY_SPEAKER: bool = false,
+    /// Allows the user to go live
+    STREAM: bool = false,
+    /// Allows guild members to view a channel, which includes reading messages in text channels and joining voice channels
+    VIEW_CHANNEL: bool = false,
+    /// Allows for sending messages in a channel. (does not allow sending messages in threads)
+    SEND_MESSAGES: bool = false,
+    /// Allows for sending of /tts messages
+    SEND_TTS_MESSAGES: bool = false,
+    /// Allows for deletion of other users messages
+    MANAGE_MESSAGES: bool = false,
+    /// Links sent by users with this permission will be auto-embedded
+    EMBED_LINKS: bool = false,
+    /// Allows for uploading images and files
+    ATTACH_FILES: bool = false,
+    /// Allows for reading of message history
+    READ_MESSAGE_HISTORY: bool = false,
+    /// Allows for using the \@everyone tag to notify all users in a channel, and the \@here tag to notify all online users in a channel
+    MENTION_EVERYONE: bool = false,
+    /// Allows the usage of custom emojis from other servers
+    USE_EXTERNAL_EMOJIS: bool = false,
+    /// Allows for viewing guild insights
+    VIEW_GUILD_INSIGHTS: bool = false,
+    /// Allows for joining of a voice channel
+    CONNECT: bool = false,
+    /// Allows for speaking in a voice channel
+    SPEAK: bool = false,
+    /// Allows for muting members in a voice channel
+    MUTE_MEMBERS: bool = false,
+    /// Allows for deafening of members in a voice channel
+    DEAFEN_MEMBERS: bool = false,
+    /// Allows for moving of members between voice channels
+    MOVE_MEMBERS: bool = false,
+    /// Allows for using voice-activity-detection in a voice channel
+    USE_VAD: bool = false,
+    /// Allows for modification of own nickname
+    CHANGE_NICKNAME: bool = false,
+    /// Allows for modification of other users nicknames
+    MANAGE_NICKNAMES: bool = false,
+    /// Allows management and editing of roles
+    MANAGE_ROLES: bool = false,
+    /// Allows management and editing of webhooks
+    MANAGE_WEBHOOKS: bool = false,
+    /// Allows for editing and deleting emojis, stickers, and soundboard sounds created by all users
+    MANAGE_GUILD_EXPRESSIONS: bool = false,
+    /// Allows members to use application commands in text channels
+    USE_SLASH_COMMANDS: bool = false,
+    /// Allows for requesting to speak in stage channels.
+    REQUEST_TO_SPEAK: bool = false,
+    /// Allows for editing and deleting scheduled events created by all users
+    MANAGE_EVENTS: bool = false,
+    /// Allows for deleting and archiving threads, and viewing all private threads
+    MANAGE_THREADS: bool = false,
+    /// Allows for creating public and announcement threads
+    CREATE_PUBLIC_THREADS: bool = false,
+    /// Allows for creating private threads
+    CREATE_PRIVATE_THREADS: bool = false,
+    /// Allows the usage of custom stickers from other servers
+    USE_EXTERNAL_STICKERS: bool = false,
+    /// Allows for sending messages in threads
+    SEND_MESSAGES_IN_THREADS: bool = false,
+    /// Allows for launching activities (applications with the `EMBEDDED` flag) in a voice channel.
+    USE_EMBEDDED_ACTIVITIES: bool = false,
+    /// Allows for timing out users to prevent them from sending or reacting to messages in chat and threads, and from speaking in voice and stage channels
+    MODERATE_MEMBERS: bool = false,
+    /// Allows for viewing role subscription insights.
+    VIEW_CREATOR_MONETIZATION_ANALYTICS: bool = false,
+    /// Allows for using soundboard in a voice channel.
+    USE_SOUNDBOARD: bool = false,
+    /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user
+    CREATE_GUILD_EXPRESSIONS: bool = false,
+    /// Allows for creating scheduled events, and editing and deleting those created by the current user
+    CREATE_EVENTS: bool = false,
+    /// Allows the usage of custom soundboards sounds from other servers
+    USE_EXTERNAL_SOUNDS: bool = false,
+    /// Allows sending voice messages
+    SEND_VOICE_MESSAGES: bool = false,
+    /// Allows sending polls
+    SEND_POLLS: bool = false,
+    /// Allows user-installed apps to send public responses. When disabled, users will still be allowed to use their apps but the responses will be ephemeral. This only applies to apps not also installed to the server.
+    USE_EXTERNAL_APPS: bool = false,
+    _pad: u15 = 0,
+};
 
-    pub const PermissionStrings = union(enum) {
-        /// Allows creation of instant invites
-        CREATE_INSTANT_INVITE,
-        /// Allows kicking members
-        KICK_MEMBERS,
-        /// Allows banning members
-        BAN_MEMBERS,
-        /// Allows all permissions and bypasses channel permission overwrites
-        ADMINISTRATOR,
-        /// Allows management and editing of channels
-        MANAGE_CHANNELS,
-        /// Allows management and editing of the guild
-        MANAGE_GUILD,
-        /// Allows for the addition of reactions to messages
-        ADD_REACTIONS,
-        /// Allows for viewing of audit logs
-        VIEW_AUDIT_LOG,
-        /// Allows for using priority speaker in a voice channel
-        PRIORITY_SPEAKER,
-        /// Allows the user to go live
-        STREAM,
-        /// Allows guild members to view a channel, which includes reading messages in text channels and joining voice channels
-        VIEW_CHANNEL,
-        /// Allows for sending messages in a channel. (does not allow sending messages in threads)
-        SEND_MESSAGES,
-        /// Allows for sending of /tts messages
-        SEND_TTS_MESSAGES,
-        /// Allows for deletion of other users messages
-        MANAGE_MESSAGES,
-        /// Links sent by users with this permission will be auto-embedded
-        EMBED_LINKS,
-        /// Allows for uploading images and files
-        ATTACH_FILES,
-        /// Allows for reading of message history
-        READ_MESSAGE_HISTORY,
-        /// Allows for using the \@everyone tag to notify all users in a channel, and the \@here tag to notify all online users in a channel
-        MENTION_EVERYONE,
-        /// Allows the usage of custom emojis from other servers
-        USE_EXTERNAL_EMOJIS,
-        /// Allows for viewing guild insights
-        VIEW_GUILD_INSIGHTS,
-        /// Allows for joining of a voice channel
-        CONNECT,
-        /// Allows for speaking in a voice channel
-        SPEAK,
-        /// Allows for muting members in a voice channel
-        MUTE_MEMBERS,
-        /// Allows for deafening of members in a voice channel
-        DEAFEN_MEMBERS,
-        /// Allows for moving of members between voice channels
-        MOVE_MEMBERS,
-        /// Allows for using voice-activity-detection in a voice channel
-        USE_VAD,
-        /// Allows for modification of own nickname
-        CHANGE_NICKNAME,
-        /// Allows for modification of other users nicknames
-        MANAGE_NICKNAMES,
-        /// Allows management and editing of roles
-        MANAGE_ROLES,
-        /// Allows management and editing of webhooks
-        MANAGE_WEBHOOKS,
-        /// Allows for editing and deleting emojis, stickers, and soundboard sounds created by all users
-        MANAGE_GUILD_EXPRESSIONS,
-        /// Allows members to use application commands in text channels
-        USE_SLASH_COMMANDS,
-        /// Allows for requesting to speak in stage channels.
-        REQUEST_TO_SPEAK,
-        /// Allows for editing and deleting scheduled events created by all users
-        MANAGE_EVENTS,
-        /// Allows for deleting and archiving threads, and viewing all private threads
-        MANAGE_THREADS,
-        /// Allows for creating public and announcement threads
-        CREATE_PUBLIC_THREADS,
-        /// Allows for creating private threads
-        CREATE_PRIVATE_THREADS,
-        /// Allows the usage of custom stickers from other servers
-        USE_EXTERNAL_STICKERS,
-        /// Allows for sending messages in threads
-        SEND_MESSAGES_IN_THREADS,
-        /// Allows for launching activities (applications with the `EMBEDDED` flag) in a voice channel.
-        USE_EMBEDDED_ACTIVITIES,
-        /// Allows for timing out users to prevent them from sending or reacting to messages in chat and threads, and from speaking in voice and stage channels
-        MODERATE_MEMBERS,
-        /// Allows for viewing role subscription insights.
-        VIEW_CREATOR_MONETIZATION_ANALYTICS,
-        /// Allows for using soundboard in a voice channel.
-        USE_SOUNDBOARD,
-        /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user
-        CREATE_GUILD_EXPRESSIONS,
-        /// Allows for creating scheduled events, and editing and deleting those created by the current user
-        CREATE_EVENTS,
-        /// Allows the usage of custom soundboards sounds from other servers
-        USE_EXTERNAL_SOUNDS,
-        /// Allows sending voice messages
-        SEND_VOICE_MESSAGES,
-        /// Allows sending polls
-        SEND_POLLS,
-        /// Allows user-installed apps to send public responses. When disabled, users will still be allowed to use their apps but the responses will be ephemeral. This only applies to apps not also installed to the server.
-        USE_EXTERNAL_APPS,
-    };
+pub const PermissionStrings = union(enum) {
+    /// Allows creation of instant invites
+    CREATE_INSTANT_INVITE,
+    /// Allows kicking members
+    KICK_MEMBERS,
+    /// Allows banning members
+    BAN_MEMBERS,
+    /// Allows all permissions and bypasses channel permission overwrites
+    ADMINISTRATOR,
+    /// Allows management and editing of channels
+    MANAGE_CHANNELS,
+    /// Allows management and editing of the guild
+    MANAGE_GUILD,
+    /// Allows for the addition of reactions to messages
+    ADD_REACTIONS,
+    /// Allows for viewing of audit logs
+    VIEW_AUDIT_LOG,
+    /// Allows for using priority speaker in a voice channel
+    PRIORITY_SPEAKER,
+    /// Allows the user to go live
+    STREAM,
+    /// Allows guild members to view a channel, which includes reading messages in text channels and joining voice channels
+    VIEW_CHANNEL,
+    /// Allows for sending messages in a channel. (does not allow sending messages in threads)
+    SEND_MESSAGES,
+    /// Allows for sending of /tts messages
+    SEND_TTS_MESSAGES,
+    /// Allows for deletion of other users messages
+    MANAGE_MESSAGES,
+    /// Links sent by users with this permission will be auto-embedded
+    EMBED_LINKS,
+    /// Allows for uploading images and files
+    ATTACH_FILES,
+    /// Allows for reading of message history
+    READ_MESSAGE_HISTORY,
+    /// Allows for using the \@everyone tag to notify all users in a channel, and the \@here tag to notify all online users in a channel
+    MENTION_EVERYONE,
+    /// Allows the usage of custom emojis from other servers
+    USE_EXTERNAL_EMOJIS,
+    /// Allows for viewing guild insights
+    VIEW_GUILD_INSIGHTS,
+    /// Allows for joining of a voice channel
+    CONNECT,
+    /// Allows for speaking in a voice channel
+    SPEAK,
+    /// Allows for muting members in a voice channel
+    MUTE_MEMBERS,
+    /// Allows for deafening of members in a voice channel
+    DEAFEN_MEMBERS,
+    /// Allows for moving of members between voice channels
+    MOVE_MEMBERS,
+    /// Allows for using voice-activity-detection in a voice channel
+    USE_VAD,
+    /// Allows for modification of own nickname
+    CHANGE_NICKNAME,
+    /// Allows for modification of other users nicknames
+    MANAGE_NICKNAMES,
+    /// Allows management and editing of roles
+    MANAGE_ROLES,
+    /// Allows management and editing of webhooks
+    MANAGE_WEBHOOKS,
+    /// Allows for editing and deleting emojis, stickers, and soundboard sounds created by all users
+    MANAGE_GUILD_EXPRESSIONS,
+    /// Allows members to use application commands in text channels
+    USE_SLASH_COMMANDS,
+    /// Allows for requesting to speak in stage channels.
+    REQUEST_TO_SPEAK,
+    /// Allows for editing and deleting scheduled events created by all users
+    MANAGE_EVENTS,
+    /// Allows for deleting and archiving threads, and viewing all private threads
+    MANAGE_THREADS,
+    /// Allows for creating public and announcement threads
+    CREATE_PUBLIC_THREADS,
+    /// Allows for creating private threads
+    CREATE_PRIVATE_THREADS,
+    /// Allows the usage of custom stickers from other servers
+    USE_EXTERNAL_STICKERS,
+    /// Allows for sending messages in threads
+    SEND_MESSAGES_IN_THREADS,
+    /// Allows for launching activities (applications with the `EMBEDDED` flag) in a voice channel.
+    USE_EMBEDDED_ACTIVITIES,
+    /// Allows for timing out users to prevent them from sending or reacting to messages in chat and threads, and from speaking in voice and stage channels
+    MODERATE_MEMBERS,
+    /// Allows for viewing role subscription insights.
+    VIEW_CREATOR_MONETIZATION_ANALYTICS,
+    /// Allows for using soundboard in a voice channel.
+    USE_SOUNDBOARD,
+    /// Allows for creating emojis, stickers, and soundboard sounds, and editing and deleting those created by the current user
+    CREATE_GUILD_EXPRESSIONS,
+    /// Allows for creating scheduled events, and editing and deleting those created by the current user
+    CREATE_EVENTS,
+    /// Allows the usage of custom soundboards sounds from other servers
+    USE_EXTERNAL_SOUNDS,
+    /// Allows sending voice messages
+    SEND_VOICE_MESSAGES,
+    /// Allows sending polls
+    SEND_POLLS,
+    /// Allows user-installed apps to send public responses. When disabled, users will still be allowed to use their apps but the responses will be ephemeral. This only applies to apps not also installed to the server.
+    USE_EXTERNAL_APPS,
+};
 
-    /// https://discord.com/developers/docs/topics/opcodes-and-status-codes#opcodes-and-status-codes
-    pub const GatewayCloseEventCodes = enum(u16) {
-        /// A normal closure of the gateway. You may attempt to reconnect.
-        NormalClosure = 1000,
-        /// We're not sure what went wrong. Try reconnecting?
-        UnknownError = 4000,
-        /// You sent an invalid [Gateway opcode](https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes) or an invalid payload for an opcode. Don't do that!
-        UnknownOpcode,
-        /// You sent an invalid [payload](https://discord.com/developers/docs/topics/gateway#sending-payloads) to us. Don't do that!
-        DecodeError,
-        /// You sent us a payload prior to [identifying](https://discord.com/developers/docs/topics/gateway-events#identify), or this session has been invalidated.
-        NotAuthenticated,
-        /// The account token sent with your [identify payload](https://discord.com/developers/docs/topics/gateway-events#identify) is incorrect.
-        AuthenticationFailed,
-        /// You sent more than one identify payload. Don't do that!
-        AlreadyAuthenticated,
-        /// The sequence sent when [resuming](https://discord.com/developers/docs/topics/gateway-events#resume) the session was invalid. Reconnect and start a new session.
-        InvalidSeq = 4007,
-        /// Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
-        RateLimited,
-        /// Your session timed out. Reconnect and start a new one.
-        SessionTimedOut,
-        /// You sent us an invalid [shard when identifying](https://discord.com/developers/docs/topics/gateway#sharding).
-        InvalidShard,
-        /// The session would have handled too many guilds - you are required to [shard](https://discord.com/developers/docs/topics/gateway#sharding) your connection in order to connect.
-        ShardingRequired,
-        /// You sent an invalid version for the gateway.
-        InvalidApiVersion,
-        /// You sent an invalid intent for a [Gateway Intent](https://discord.com/developers/docs/topics/gateway#gateway-intents). You may have incorrectly calculated the bitwise value.
-        InvalidIntents,
-        /// You sent a disallowed intent for a [Gateway Intent](https://discord.com/developers/docs/topics/gateway#gateway-intents). You may have tried to specify an intent that you [have not enabled or are not approved for](https://discord.com/developers/docs/topics/gateway#privileged-intents).
-        DisallowedIntents,
-    };
+/// https://discord.com/developers/docs/topics/opcodes-and-status-codes#opcodes-and-status-codes
+pub const GatewayCloseEventCodes = enum(u16) {
+    /// A normal closure of the gateway. You may attempt to reconnect.
+    NormalClosure = 1000,
+    /// We're not sure what went wrong. Try reconnecting?
+    UnknownError = 4000,
+    /// You sent an invalid [Gateway opcode](https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes) or an invalid payload for an opcode. Don't do that!
+    UnknownOpcode,
+    /// You sent an invalid [payload](https://discord.com/developers/docs/topics/gateway#sending-payloads) to us. Don't do that!
+    DecodeError,
+    /// You sent us a payload prior to [identifying](https://discord.com/developers/docs/topics/gateway-events#identify), or this session has been invalidated.
+    NotAuthenticated,
+    /// The account token sent with your [identify payload](https://discord.com/developers/docs/topics/gateway-events#identify) is incorrect.
+    AuthenticationFailed,
+    /// You sent more than one identify payload. Don't do that!
+    AlreadyAuthenticated,
+    /// The sequence sent when [resuming](https://discord.com/developers/docs/topics/gateway-events#resume) the session was invalid. Reconnect and start a new session.
+    InvalidSeq = 4007,
+    /// Woah nelly! You're sending payloads to us too quickly. Slow it down! You will be disconnected on receiving this.
+    RateLimited,
+    /// Your session timed out. Reconnect and start a new one.
+    SessionTimedOut,
+    /// You sent us an invalid [shard when identifying](https://discord.com/developers/docs/topics/gateway#sharding).
+    InvalidShard,
+    /// The session would have handled too many guilds - you are required to [shard](https://discord.com/developers/docs/topics/gateway#sharding) your connection in order to connect.
+    ShardingRequired,
+    /// You sent an invalid version for the gateway.
+    InvalidApiVersion,
+    /// You sent an invalid intent for a [Gateway Intent](https://discord.com/developers/docs/topics/gateway#gateway-intents). You may have incorrectly calculated the bitwise value.
+    InvalidIntents,
+    /// You sent a disallowed intent for a [Gateway Intent](https://discord.com/developers/docs/topics/gateway#gateway-intents). You may have tried to specify an intent that you [have not enabled or are not approved for](https://discord.com/developers/docs/topics/gateway#privileged-intents).
+    DisallowedIntents,
+};
 
-    /// https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes
-    pub const GatewayOpcodes = enum(u4) {
-        /// An event was dispatched.
-        Dispatch,
-        /// Fired periodically by the client to keep the connection alive.
-        Heartbeat,
-        /// Starts a new session during the initial handshake.
-        Identify,
-        /// Update the client's presence.
-        PresenceUpdate,
-        /// Used to join/leave or move between voice channels.
-        VoiceStateUpdate,
-        /// Resume a previous session that was disconnected.
-        Resume = 6,
-        /// You should attempt to reconnect and resume immediately.
-        Reconnect,
-        /// Request information about offline guild members in a large guild.
-        RequestGuildMembers,
-        /// The session has been invalidated. You should reconnect and identify/resume accordingly.
-        InvalidSession,
-        /// Sent immediately after connecting, contains the `heartbeat_interval` to use.
-        Hello,
-        /// Sent in response to receiving a heartbeat to acknowledge that it has been received.
-        HeartbeatACK,
-    };
+/// https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes
+pub const GatewayOpcodes = enum(u4) {
+    /// An event was dispatched.
+    Dispatch,
+    /// Fired periodically by the client to keep the connection alive.
+    Heartbeat,
+    /// Starts a new session during the initial handshake.
+    Identify,
+    /// Update the client's presence.
+    PresenceUpdate,
+    /// Used to join/leave or move between voice channels.
+    VoiceStateUpdate,
+    /// Resume a previous session that was disconnected.
+    Resume = 6,
+    /// You should attempt to reconnect and resume immediately.
+    Reconnect,
+    /// Request information about offline guild members in a large guild.
+    RequestGuildMembers,
+    /// The session has been invalidated. You should reconnect and identify/resume accordingly.
+    InvalidSession,
+    /// Sent immediately after connecting, contains the `heartbeat_interval` to use.
+    Hello,
+    /// Sent in response to receiving a heartbeat to acknowledge that it has been received.
+    HeartbeatACK,
+};
 
-    pub const GatewayDispatchEventNames = union(enum) {
-        APPLICATION_COMMAND_PERMISSIONS_UPDATE,
-        AUTO_MODERATION_RULE_CREATE,
-        AUTO_MODERATION_RULE_UPDATE,
-        AUTO_MODERATION_RULE_DELETE,
-        AUTO_MODERATION_ACTION_EXECUTION,
-        CHANNEL_CREATE,
-        CHANNEL_UPDATE,
-        CHANNEL_DELETE,
-        CHANNEL_PINS_UPDATE,
-        THREAD_CREATE,
-        THREAD_UPDATE,
-        THREAD_DELETE,
-        THREAD_LIST_SYNC,
-        THREAD_MEMBER_UPDATE,
-        THREAD_MEMBERS_UPDATE,
-        GUILD_AUDIT_LOG_ENTRY_CREATE,
-        GUILD_CREATE,
-        GUILD_UPDATE,
-        GUILD_DELETE,
-        GUILD_BAN_ADD,
-        GUILD_BAN_REMOVE,
-        GUILD_EMOJIS_UPDATE,
-        GUILD_STICKERS_UPDATE,
-        GUILD_INTEGRATIONS_UPDATE,
-        GUILD_MEMBER_ADD,
-        GUILD_MEMBER_REMOVE,
-        GUILD_MEMBER_UPDATE,
-        GUILD_MEMBERS_CHUNK,
-        GUILD_ROLE_CREATE,
-        GUILD_ROLE_UPDATE,
-        GUILD_ROLE_DELETE,
-        GUILD_SCHEDULED_EVENT_CREATE,
-        GUILD_SCHEDULED_EVENT_UPDATE,
-        GUILD_SCHEDULED_EVENT_DELETE,
-        GUILD_SCHEDULED_EVENT_USER_ADD,
-        GUILD_SCHEDULED_EVENT_USER_REMOVE,
-        INTEGRATION_CREATE,
-        INTEGRATION_UPDATE,
-        INTEGRATION_DELETE,
-        INTERACTION_CREATE,
-        INVITE_CREATE,
-        INVITE_DELETE,
-        MESSAGE_CREATE,
-        MESSAGE_UPDATE,
-        MESSAGE_DELETE,
-        MESSAGE_DELETE_BULK,
-        MESSAGE_REACTION_ADD,
-        MESSAGE_REACTION_REMOVE,
-        MESSAGE_REACTION_REMOVE_ALL,
-        MESSAGE_REACTION_REMOVE_EMOJI,
-        PRESENCE_UPDATE,
-        STAGE_INSTANCE_CREATE,
-        STAGE_INSTANCE_UPDATE,
-        STAGE_INSTANCE_DELETE,
-        TYPING_START,
-        USER_UPDATE,
-        VOICE_CHANNEL_EFFECT_SEND,
-        VOICE_STATE_UPDATE,
-        VOICE_SERVER_UPDATE,
-        WEBHOOKS_UPDATE,
-        ENTITLEMENT_CREATE,
-        ENTITLEMENT_UPDATE,
-        ENTITLEMENT_DELETE,
-        MESSAGE_POLL_VOTE_ADD,
-        MESSAGE_POLL_VOTE_REMOVE,
+pub const GatewayDispatchEventNames = union(enum) {
+    APPLICATION_COMMAND_PERMISSIONS_UPDATE,
+    AUTO_MODERATION_RULE_CREATE,
+    AUTO_MODERATION_RULE_UPDATE,
+    AUTO_MODERATION_RULE_DELETE,
+    AUTO_MODERATION_ACTION_EXECUTION,
+    CHANNEL_CREATE,
+    CHANNEL_UPDATE,
+    CHANNEL_DELETE,
+    CHANNEL_PINS_UPDATE,
+    THREAD_CREATE,
+    THREAD_UPDATE,
+    THREAD_DELETE,
+    THREAD_LIST_SYNC,
+    THREAD_MEMBER_UPDATE,
+    THREAD_MEMBERS_UPDATE,
+    GUILD_AUDIT_LOG_ENTRY_CREATE,
+    GUILD_CREATE,
+    GUILD_UPDATE,
+    GUILD_DELETE,
+    GUILD_BAN_ADD,
+    GUILD_BAN_REMOVE,
+    GUILD_EMOJIS_UPDATE,
+    GUILD_STICKERS_UPDATE,
+    GUILD_INTEGRATIONS_UPDATE,
+    GUILD_MEMBER_ADD,
+    GUILD_MEMBER_REMOVE,
+    GUILD_MEMBER_UPDATE,
+    GUILD_MEMBERS_CHUNK,
+    GUILD_ROLE_CREATE,
+    GUILD_ROLE_UPDATE,
+    GUILD_ROLE_DELETE,
+    GUILD_SCHEDULED_EVENT_CREATE,
+    GUILD_SCHEDULED_EVENT_UPDATE,
+    GUILD_SCHEDULED_EVENT_DELETE,
+    GUILD_SCHEDULED_EVENT_USER_ADD,
+    GUILD_SCHEDULED_EVENT_USER_REMOVE,
+    INTEGRATION_CREATE,
+    INTEGRATION_UPDATE,
+    INTEGRATION_DELETE,
+    INTERACTION_CREATE,
+    INVITE_CREATE,
+    INVITE_DELETE,
+    MESSAGE_CREATE,
+    MESSAGE_UPDATE,
+    MESSAGE_DELETE,
+    MESSAGE_DELETE_BULK,
+    MESSAGE_REACTION_ADD,
+    MESSAGE_REACTION_REMOVE,
+    MESSAGE_REACTION_REMOVE_ALL,
+    MESSAGE_REACTION_REMOVE_EMOJI,
+    PRESENCE_UPDATE,
+    STAGE_INSTANCE_CREATE,
+    STAGE_INSTANCE_UPDATE,
+    STAGE_INSTANCE_DELETE,
+    TYPING_START,
+    USER_UPDATE,
+    VOICE_CHANNEL_EFFECT_SEND,
+    VOICE_STATE_UPDATE,
+    VOICE_SERVER_UPDATE,
+    WEBHOOKS_UPDATE,
+    ENTITLEMENT_CREATE,
+    ENTITLEMENT_UPDATE,
+    ENTITLEMENT_DELETE,
+    MESSAGE_POLL_VOTE_ADD,
+    MESSAGE_POLL_VOTE_REMOVE,
 
-        READY,
-        RESUMED,
-    };
-
-    /// https://discord.com/developers/docs/topics/gateway#list-of-intents
-    pub const GatewayIntents = packed struct {
-        pub fn toRaw(self: GatewayIntents) u32 {
-            return @bitCast(self);
-        }
-
-        pub fn fromRaw(raw: u32) GatewayIntents {
-            return @bitCast(raw);
-        }
-
-    pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: std.json.ParseOptions) !@This() {
-        const value = try std.json.innerParse(std.json.Value, allocator, src, .{
-            .ignore_unknown_fields = true,
-            .max_value_len = 0x1000,
-        });
-        if (value != .integer) @panic("Invalid value for bitfield");
-
-        return fromRaw(@intCast(value.integer));
-    }
-
-    pub fn jsonParseFromValue(_: std.mem.Allocator, src: std.json.Value, _: std.json.ParseOptions) @This() {
-        if (src != .integer) @panic("Invalid value for bitfield");
-        return fromRaw(@intCast(src.integer));
-    }
+    READY,
+    RESUMED,
+};
 
 
-        ///
-        /// - GUILD_CREATE
-        /// - GUILD_UPDATE
-        /// - GUILD_DELETE
-        /// - GUILD_ROLE_CREATE
-        /// - GUILD_ROLE_UPDATE
-        /// - GUILD_ROLE_DELETE
-        /// - CHANNEL_CREATE
-        /// - CHANNEL_UPDATE
-        /// - CHANNEL_DELETE
-        /// - CHANNEL_PINS_UPDATE
-        /// - THREAD_CREATE
-        /// - THREAD_UPDATE
-        /// - THREAD_DELETE
-        /// - THREAD_LIST_SYNC
-        /// - THREAD_MEMBER_UPDATE
-        /// - THREAD_MEMBERS_UPDATE
-        /// - STAGE_INSTANCE_CREATE
-        /// - STAGE_INSTANCE_UPDATE
-        /// - STAGE_INSTANCE_DELETE
-        ////
-        Guilds: bool = false,
-        ///
-        /// - GUILD_MEMBER_ADD
-        /// - GUILD_MEMBER_UPDATE
-        /// - GUILD_MEMBER_REMOVE
-        /// - THREAD_MEMBERS_UPDATE
-        ///
-        /// This is a privileged intent.
-        ////
-        GuildMembers: bool = false,
-        ///
-        /// - GUILD_AUDIT_LOG_ENTRY_CREATE
-        /// - GUILD_BAN_ADD
-        /// - GUILD_BAN_REMOVE
-        ////
-        GuildModeration: bool = false,
-        ///
-        /// - GUILD_EMOJIS_UPDATE
-        /// - GUILD_STICKERS_UPDATE
-        ////
-        GuildEmojisAndStickers: bool = false,
-        ///
-        /// - GUILD_INTEGRATIONS_UPDATE
-        /// - INTEGRATION_CREATE
-        /// - INTEGRATION_UPDATE
-        /// - INTEGRATION_DELETE
-        ////
-        GuildIntegrations: bool = false,
-        ///
-        /// - WEBHOOKS_UPDATE
-        ////
-        GuildWebhooks: bool = false,
-        ///
-        /// - INVITE_CREATE
-        /// - INVITE_DELETE
-        ////
-        GuildInvites: bool = false,
-        ///
-        /// - VOICE_STATE_UPDATE
-        /// - VOICE_CHANNEL_EFFECT_SEND
-        ////
-        GuildVoiceStates: bool = false,
-        ///
-        /// - PRESENCE_UPDATE
-        ///
-        /// This is a privileged intent.
-        ////
-        GuildPresences: bool = false,
-        ///
-        /// - MESSAGE_CREATE
-        /// - MESSAGE_UPDATE
-        /// - MESSAGE_DELETE
-        /// - MESSAGE_DELETE_BULK
-        ///
-        /// The messages do not contain content by default.
-        /// If you want to receive their content too, you need to turn on the privileged `MESSAGE_CONTENT` intent. */
-        GuildMessages: bool = false,
-        ///
-        /// - MESSAGE_REACTION_ADD
-        /// - MESSAGE_REACTION_REMOVE
-        /// - MESSAGE_REACTION_REMOVE_ALL
-        /// - MESSAGE_REACTION_REMOVE_EMOJI
-        ////
-        GuildMessageReactions: bool = false,
-        ///
-        /// - TYPING_START
-        ////
-        GuildMessageTyping: bool = false,
-        ///
-        /// - CHANNEL_CREATE
-        /// - MESSAGE_CREATE
-        /// - MESSAGE_UPDATE
-        /// - MESSAGE_DELETE
-        /// - CHANNEL_PINS_UPDATE
-        ////
-        DirectMessages: bool = false,
-        ///
-        /// - MESSAGE_REACTION_ADD
-        /// - MESSAGE_REACTION_REMOVE
-        /// - MESSAGE_REACTION_REMOVE_ALL
-        /// - MESSAGE_REACTION_REMOVE_EMOJI
-        ////
-        DirectMessageReactions: bool = false,
-        ///
-        /// - TYPING_START
-        ////
-        DirectMessageTyping: bool = false,
-        ///
-        /// This intent will add all content related values to message events.
-        ///
-        /// This is a privileged intent.
-        ////
-        MessageContent: bool = false,
-        ///
-        /// - GUILD_SCHEDULED_EVENT_CREATE
-        /// - GUILD_SCHEDULED_EVENT_UPDATE
-        /// - GUILD_SCHEDULED_EVENT_DELETE
-        /// - GUILD_SCHEDULED_EVENT_USER_ADD this is experimental and unstable.
-        /// - GUILD_SCHEDULED_EVENT_USER_REMOVE this is experimental and unstable.
-        ////
-        GuildScheduledEvents: bool = false,
-        _pad: u4 = 0,
-        ///
-        /// - AUTO_MODERATION_RULE_CREATE
-        /// - AUTO_MODERATION_RULE_UPDATE
-        /// - AUTO_MODERATION_RULE_DELETE
-        ////
-        AutoModerationConfiguration: bool = false,
-        ///
-        /// - AUTO_MODERATION_ACTION_EXECUTION
-        ////
-        AutoModerationExecution: bool = false,
-        _pad2: u3 = 0,
-        ///
-        /// - MESSAGE_POLL_VOTE_ADD
-        /// - MESSAGE_POLL_VOTE_REMOVE
-        ////
-        GuildMessagePolls: bool = false,
-        ///
-        /// - MESSAGE_POLL_VOTE_ADD
-        /// - MESSAGE_POLL_VOTE_REMOVE
-        ////
-        DirectMessagePolls: bool = false,
-        _pad3: u4 = 0,
-    };
+/// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionresponsetype
+pub const InteractionResponseTypes = enum(u4) {
+    /// ACK a `Ping`
+    Pong = 1,
+    /// Respond to an interaction with a message
+    ChannelMessageWithSource = 4,
+    /// ACK an interaction and edit a response later, the user sees a loading state
+    DeferredChannelMessageWithSource = 5,
+    /// For components, ACK an interaction and edit the original message later; the user does not see a loading state
+    DeferredUpdateMessage = 6,
+    /// For components, edit the message the component was attached to
+    UpdateMessage = 7,
+    /// For Application Command Options, send an autocomplete result
+    ApplicationCommandAutocompleteResult = 8,
+    /// For Command or Component interactions, send a Modal response
+    Modal = 9,
+    ///
+    /// Respond to an interaction with an upgrade button, only available for apps with monetization enabled
+    ///
+    /// @deprecated You should migrate to the premium button components
+    PremiumRequired = 10,
+    ///
+    /// Launch the Activity associated with the app.
+    ///
+    /// @remarks
+    /// Only available for apps with Activities enabled
+    LaunchActivity = 12,
+};
 
-    /// https://discord.com/developers/docs/topics/gateway#list-of-intents
-    pub const Intents = GatewayIntents;
+pub const SortOrderTypes = enum {
+    /// Sort forum posts by activity
+    LatestActivity,
+    /// Sort forum posts by creation time (from most recent to oldest)
+    CreationDate,
+};
 
-    /// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionresponsetype
-    pub const InteractionResponseTypes = enum(u4) {
-        /// ACK a `Ping`
-        Pong = 1,
-        /// Respond to an interaction with a message
-        ChannelMessageWithSource = 4,
-        /// ACK an interaction and edit a response later, the user sees a loading state
-        DeferredChannelMessageWithSource = 5,
-        /// For components, ACK an interaction and edit the original message later; the user does not see a loading state
-        DeferredUpdateMessage = 6,
-        /// For components, edit the message the component was attached to
-        UpdateMessage = 7,
-        /// For Application Command Options, send an autocomplete result
-        ApplicationCommandAutocompleteResult = 8,
-        /// For Command or Component interactions, send a Modal response
-        Modal = 9,
-        ///
-        /// Respond to an interaction with an upgrade button, only available for apps with monetization enabled
-        ///
-        /// @deprecated You should migrate to the premium button components
-        PremiumRequired = 10,
-        ///
-        /// Launch the Activity associated with the app.
-        ///
-        /// @remarks
-        /// Only available for apps with Activities enabled
-        LaunchActivity = 12,
-    };
+pub const ForumLayout = enum {
+    /// No default has been set for forum channel.
+    NotSet,
+    /// Display posts as a list.
+    ListView,
+    /// Display posts as a collection of tiles.
+    GalleryView,
+};
 
-    pub const SortOrderTypes = enum {
-        /// Sort forum posts by activity
-        LatestActivity,
-        /// Sort forum posts by creation time (from most recent to oldest)
-        CreationDate,
-    };
-
-    pub const ForumLayout = enum {
-        /// No default has been set for forum channel.
-        NotSet,
-        /// Display posts as a list.
-        ListView,
-        /// Display posts as a collection of tiles.
-        GalleryView,
-    };
-
-    /// https://discord.com/developers/docs/reference#image-formatting
-    /// json is only for stickers
-    pub const ImageFormat = union(enum) {
-        jpg,
-        jpeg,
-        png,
-        webp,
-        gif,
-        json,
+/// https://discord.com/developers/docs/reference#image-formatting
+/// json is only for stickers
+pub const ImageFormat = union(enum) {
+    jpg,
+    jpeg,
+    png,
+    webp,
+    gif,
+    json,
 };
 
 /// https://discord.com/developers/docs/reference#image-formatting

@@ -66,8 +66,6 @@
     pub const GatewayCloseEventCodes = @import("shared.zig").GatewayCloseEventCodes;
     pub const GatewayOpcodes = @import("shared.zig").GatewayOpcodes;
     pub const GatewayDispatchEventNames = @import("shared.zig").GatewayDispatchEventNames;
-    pub const GatewayIntents = @import("shared.zig").GatewayIntents;
-    pub const Intents = @import("shared.zig").Intents;
     pub const InteractionResponseTypes = @import("shared.zig").InteractionResponseTypes;
     pub const SortOrderTypes = @import("shared.zig").SortOrderTypes;
     pub const ForumLayout = @import("shared.zig").ForumLayout;

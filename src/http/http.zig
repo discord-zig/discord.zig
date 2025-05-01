@@ -18,10 +18,10 @@ const std = @import("std");
 const mem = std.mem;
 const http = std.http;
 const json = std.json;
-const json_helpers = @import("json-helper.zig");
+const json_helpers = @import("../utils/json.zig");
 
-pub const Result = @import("errors.zig").Result;
-pub const DiscordError = @import("errors.zig").DiscordError;
+pub const Result = @import("../errors.zig").Result;
+pub const DiscordError = @import("../errors.zig").DiscordError;
 
 pub const BASE_URL = "https://discord.com/api/v10";
 

@@ -21,7 +21,7 @@ const Partial = @import("partial.zig").Partial;
 const User = @import("user.zig").User;
 const Team = @import("team.zig").Team;
 const Guild = @import("guild.zig").Guild;
-const AssociativeArray = @import("../json-helper.zig").AssociativeArray;
+const AssociativeArray = @import("../utils/json.zig").AssociativeArray;
 
 /// https://discord.com/developers/docs/resources/application#application-object
 pub const Application = struct {

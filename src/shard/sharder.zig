@@ -14,20 +14,21 @@
 //! OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 //! PERFORMANCE OF THIS SOFTWARE.
 
-const Intents = @import("./structures/types.zig").Intents;
-const Snowflake = @import("./structures/snowflake.zig").Snowflake;
-const GatewayBotInfo = @import("internal.zig").GatewayBotInfo;
-const IdentifyProperties = @import("internal.zig").IdentifyProperties;
-const internalLogif = @import("internal.zig").logif;
-const ShardDetails = @import("internal.zig").ShardDetails;
-const ConnectQueue = @import("internal.zig").ConnectQueue;
-const GatewayDispatchEvent = @import("internal.zig").GatewayDispatchEvent;
-const Log = @import("internal.zig").Log;
+const Intents = @import("intents.zig").Intents;
+const Snowflake = @import("../structures/snowflake.zig").Snowflake;
+const GatewayBotInfo = @import("util.zig").GatewayBotInfo;
+const IdentifyProperties = @import("util.zig").IdentifyProperties;
+const internalLogif = @import("../utils/core.zig").logif;
+const ShardDetails = @import("util.zig").ShardDetails;
+const ConnectQueue = @import("connect_queue.zig").ConnectQueue;
+const GatewayDispatchEvent = @import("../utils/core.zig").GatewayDispatchEvent;
+const Log = @import("../utils/core.zig").Log;
 const Shard = @import("shard.zig").Shard;
 const std = @import("std");
 const mem = std.mem;
-const debug = @import("internal.zig").debug;
-const TableTemplate = @import("cache.zig").TableTemplate;
+const debug = @import("../utils/core.zig").debug;
+const TableTemplate = @import("../cache/cache.zig").TableTemplate;
+const CacheTables = @import("../cache/cache.zig").CacheTables;
 
 pub fn ShardManager(comptime Table: TableTemplate) type {
     return struct {
@@ -50,7 +51,7 @@ pub fn ShardManager(comptime Table: TableTemplate) type {
         log: Log,
 
         // must be initialised
-        cache: *@import("cache.zig").CacheTables(Table),
+        cache: *CacheTables(Table),
 
         pub const ShardData = struct {
             /// resume seq to resume connections
@@ -87,11 +88,11 @@ pub fn ShardManager(comptime Table: TableTemplate) type {
             options: SessionOptions,
             run: GatewayDispatchEvent,
             log: Log,
-            cache: @import("cache.zig").TableTemplate,
+            cache: TableTemplate,
         }) mem.Allocator.Error!Self {
             const concurrency = settings.options.info.session_start_limit.?.max_concurrency;
-            const cache = try allocator.create(@import("cache.zig").CacheTables(Table));
-            cache.* = @import("cache.zig").CacheTables(Table).defaults(allocator);
+            const cache = try allocator.create(CacheTables(Table));
+            cache.* = CacheTables(Table).defaults(allocator);
 
             return .{
                 .allocator = allocator,

@@ -29,5 +29,5 @@ pub const DiscordError = struct {
 };
 
 pub fn Result(comptime T: type) type {
-    return @import("json-helper.zig").OwnedEither(DiscordError, T);
+    return @import("./utils/json.zig").OwnedEither(DiscordError, T);
 }
