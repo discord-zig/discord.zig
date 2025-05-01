@@ -2906,5 +2906,7 @@ pub fn Shard(comptime Table: TableTemplate) type {
         inline fn logif(self: *Self, comptime format: []const u8, args: anytype) void {
             internalLogif(self.log, format, args);
         }
+
+
     };
 }

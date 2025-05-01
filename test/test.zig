@@ -46,8 +46,16 @@ pub fn main() !void {
     var handler = Discord.init(allocator);
     defer handler.deinit();
 
+    const env_map = try allocator.create(std.process.EnvMap);
+    env_map.* = try std.process.getEnvMap(allocator);
+    defer env_map.deinit();
+
+    const token = env_map.get("DISCORD_TOKEN") orelse {
+        @panic("DISCORD_TOKEN not found in environment variables");
+    };
+
     try handler.start(.{
-        .token = std.posix.getenv("DISCORD_TOKEN").?,
+        .token = token,
         .intents = Intents.fromRaw(INTENTS),
         .run = .{ .message_create = &message_create, .ready = &ready },
         .log = .yes,

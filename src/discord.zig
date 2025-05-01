@@ -366,8 +366,15 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
             log: Log,
             cache: cache.TableTemplate,
         }) !void {
-            self.token = settings.token;
-            var req = FetchReq.init(self.allocator, settings.token);
+            if (!std.mem.startsWith(u8, settings.token, "Bot")) {
+                var buffer = [_]u8{undefined} ** 128;
+                const printed = try std.fmt.bufPrint(&buffer, "Bot {s}", .{settings.token});
+                self.token = printed;
+            } else {
+                self.token = settings.token;
+            }
+
+            var req = FetchReq.init(self.allocator, self.token);
             defer req.deinit();
 
             const res = try req.makeRequest(.GET, "/gateway/bot", null);
@@ -383,7 +390,7 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
             defer parsed.deinit();
 
             self.sharder = try Sharder(Table).init(self.allocator, .{
-                .token = settings.token,
+                .token = self.token,
                     .intents = settings.intents,
                 .run = settings.run,
                 .options = Sharder(Table).SessionOptions{
@@ -427,8 +434,5 @@ pub fn start(self: *Session, settings: struct {
     log: Log,
     cache: cache.TableTemplate,
 }) !void {
-    if (std.mem.startsWith(u8, settings.token, "Bot")) // save memory this way
-        std.debug.panic("Your token is invalid, try prepending Bot to it");
-
     return self.start(settings);
 }

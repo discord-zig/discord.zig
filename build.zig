@@ -16,7 +16,6 @@ pub fn build(b: *std.Build) void {
 
     const zlib = b.dependency("zlib", .{});
 
-
     const dzig = b.addModule("discord.zig", .{
         .root_source_file = b.path("src/discord.zig"),
         .link_libc = true,
