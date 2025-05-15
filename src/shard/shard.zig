@@ -834,8 +834,8 @@ pub fn handleEvent(self: *Self, name: []const u8, payload: json.Value) !void {
     };
 
     // default handler for whoever wants it
-    if (self.handler.any) |anyEvent|
-        try anyEvent(self, payload);
+    //if (self.handler.any) |anyEvent|
+        //try anyEvent(self, payload);
 }
 
 pub fn logif(self: *Self, comptime format: []const u8, args: anytype) void {
