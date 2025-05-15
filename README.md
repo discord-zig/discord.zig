@@ -11,16 +11,20 @@ A high-performance bleeding edge Discord library in Zig, featuring full API cove
 const std = @import("std");
 const Discord = @import("discord");
 const Shard = Discord.Shard;
+const Intents = Discord.Intents;
+
+const INTENTS = 53608447;
+
+var session: *Discord.Session = undefined;
 
 fn ready(_: *Shard, payload: Discord.Ready) !void {
     std.debug.print("logged in as {s}\n", .{payload.user.username});
+    // cache demonstration TODO
 }
 
-fn message_create(session: *Shard, message: Discord.Message) !void {
-    if (std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
-        var result = try session.sendMessage(message.channel_id, .{
-            .content = "hello world from discord.zig",
-        });
+fn message_create(_: *Shard, message: Discord.Message) !void {
+    if (message.content != null and std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
+        var result = try session.api.sendMessage(message.channel_id, .{ .content = "hi :)" });
         defer result.deinit();
 
         const m = result.value.unwrap();
@@ -32,14 +36,25 @@ pub fn main() !void {
     var gpa: std.heap.GeneralPurposeAllocator(.{}) = .init;
     const allocator = gpa.allocator();
 
-    var handler = Discord.init(allocator);
-    defer handler.deinit();
+    session = try allocator.create(Discord.Session);
+    session.* = Discord.init(allocator);
+    defer session.deinit();
 
-    try handler.start(.{
-        .intents = Discord.Intents.fromRaw(53608447),
-        .token = std.posix.getenv("DISCORD_TOKEN").?,
+    const env_map = try allocator.create(std.process.EnvMap);
+    env_map.* = try std.process.getEnvMap(allocator);
+    defer env_map.deinit();
+
+    const token = env_map.get("DISCORD_TOKEN") orelse {
+        @panic("DISCORD_TOKEN not found in environment variables");
+    };
+
+    try session.start(.{
+        .authorization = token,
+        .intents = Intents.fromRaw(INTENTS),
         .run = .{ .message_create = &message_create, .ready = &ready },
-        .cache = Discord.CacheTables.defaults(allocator),
+        .log = .yes,
+        .options = .{},
+        .cache = .defaults(allocator),
     });
 }
 ```
