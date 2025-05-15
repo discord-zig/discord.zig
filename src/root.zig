@@ -310,7 +310,7 @@ pub const CacheLike = @import("cache/cache.zig").CacheLike;
 pub const DefaultCache = @import("cache/cache.zig").DefaultCache;
 
 pub const Permissions = @import("utils/permissions.zig").Permissions;
-pub const Shard = @import("shard/shard.zig").Shard;
+pub const Shard = @import("shard/shard.zig");
 pub const zjson = @compileError("Deprecated.");
 
 pub const Internal = @import("utils/core.zig");
@@ -319,12 +319,13 @@ const GatewayBotInfo = @import("shard/util.zig").GatewayBotInfo;
 const Log = Internal.Log;
 
 // sharder
-pub const Sharder = @import("shard/sharder.zig").ShardManager;
+pub const Sharder = @import("shard/sharder.zig");
 
 pub const cache = @import("cache/cache.zig");
 
 pub const FetchReq = @import("http/http.zig").FetchReq;
 pub const FileData = @import("http/http.zig").FileData;
+pub const API = @import("http/api.zig");
 
 const std = @import("std");
 const mem = std.mem;
@@ -336,14 +337,20 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
         const Self = @This();
 
         allocator: mem.Allocator,
-        sharder: Sharder(Table),
-        token: []const u8,
+        sharder: Sharder,
+        authorization: []const u8,
+        cache: cache.CacheTables(Table),
+
+        // there is only 1 api, therefore we don't need pointers
+        api: API,
 
         pub fn init(allocator: mem.Allocator) Self {
             return .{
                 .allocator = allocator,
                 .sharder = undefined,
-                .token = undefined,
+                .authorization = undefined,
+                .api = undefined,
+                .cache = .defaults(allocator),
             };
         }
 
@@ -352,7 +359,7 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
         }
 
         pub fn start(self: *Self, settings: struct {
-            token: []const u8,
+            authorization: []const u8,
             intents: Intents,
             options: struct {
                 spawn_shard_delay: u64 = 5300,
@@ -362,17 +369,20 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
             },
             run: GatewayDispatchEvent,
             log: Log,
-            cache: cache.TableTemplate,
+            cache: ?cache.CacheTables(Table),
         }) !void {
-            if (!std.mem.startsWith(u8, settings.token, "Bot")) {
+            if (!std.mem.startsWith(u8, settings.authorization, "Bot")) {
                 var buffer = [_]u8{undefined} ** 128;
-                const printed = try std.fmt.bufPrint(&buffer, "Bot {s}", .{settings.token});
-                self.token = printed;
+                const printed = try std.fmt.bufPrint(&buffer, "Bot {s}", .{settings.authorization});
+                self.authorization = printed;
             } else {
-                self.token = settings.token;
+                self.authorization = settings.authorization;
             }
 
-            var req = FetchReq.init(self.allocator, self.token);
+            self.api = API.init(self.allocator, self.authorization);
+            self.cache = settings.cache orelse .defaults(self.allocator);
+
+            var req = FetchReq.init(self.allocator, self.authorization);
             defer req.deinit();
 
             const res = try req.makeRequest(.GET, "/gateway/bot", null);
@@ -387,11 +397,11 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
             const parsed = try json.parseFromSlice(GatewayBotInfo, self.allocator, body, .{});
             defer parsed.deinit();
 
-            self.sharder = try Sharder(Table).init(self.allocator, .{
-                .token = self.token,
-                    .intents = settings.intents,
+            self.sharder = try Sharder.init(self.allocator, .{
+                .authorization = self.authorization,
+                .intents = settings.intents,
                 .run = settings.run,
-                .options = Sharder(Table).SessionOptions{
+                .options = Sharder.SessionOptions{
                     .info = parsed.value,
                     .shard_start = settings.options.shard_start,
                     .shard_end = @intCast(parsed.value.shards),
@@ -399,7 +409,6 @@ pub fn CustomisedSession(comptime Table: cache.TableTemplate) type {
                     .spawn_shard_delay = settings.options.spawn_shard_delay,
                 },
                 .log = settings.log,
-                .cache = settings.cache,
             });
 
             try self.sharder.spawnShards();
@@ -423,7 +432,7 @@ pub const GatewayIntents = @import("./shard/intents.zig").GatewayIntents;
 pub const Intents = @import("./shard/intents.zig").Intents;
 
 pub fn start(self: *Session, settings: struct {
-    token: []const u8,
+    authorization: []const u8,
     intents: Intents,
     options: struct {
         spawn_shard_delay: u64 = 5300,
@@ -433,7 +442,7 @@ pub fn start(self: *Session, settings: struct {
     },
     run: GatewayDispatchEvent,
     log: Log,
-    cache: cache.TableTemplate,
+    cache: cache.CacheTables(DefaultTable),
 }) !void {
     return self.start(settings);
 }

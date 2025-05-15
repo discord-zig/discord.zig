@@ -20,18 +20,17 @@ const Shard = Discord.Shard;
 const Intents = Discord.Intents;
 
 const INTENTS = 53608447;
-const Cache = Discord.cache.TableTemplate{};
 
-fn ready(_: *anyopaque, payload: Discord.Ready) !void {
+var session: *Discord.Session = undefined;
+
+fn ready(_: *Shard, payload: Discord.Ready) !void {
     std.debug.print("logged in as {s}\n", .{payload.user.username});
+    // cache demonstration TODO
 }
 
-fn message_create(shard_ptr: *anyopaque, message: Discord.Message) !void {
-    // set custom cache
-    const session: *Shard(Cache) = @ptrCast(@alignCast(shard_ptr));
-
+fn message_create(_: *Shard, message: Discord.Message) !void {
     if (message.content != null and std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
-        var result = try session.sendMessage(message.channel_id, .{ .content = "hi :)" });
+        var result = try session.api.sendMessage(message.channel_id, .{ .content = "hi :)" });
         defer result.deinit();
 
         const m = result.value.unwrap();
@@ -43,8 +42,9 @@ pub fn main() !void {
     var gpa: std.heap.GeneralPurposeAllocator(.{}) = .init;
     const allocator = gpa.allocator();
 
-    var handler = Discord.init(allocator);
-    defer handler.deinit();
+    session = try allocator.create(Discord.Session);
+    session.* = Discord.init(allocator);
+    defer session.deinit();
 
     const env_map = try allocator.create(std.process.EnvMap);
     env_map.* = try std.process.getEnvMap(allocator);
@@ -54,12 +54,12 @@ pub fn main() !void {
         @panic("DISCORD_TOKEN not found in environment variables");
     };
 
-    try handler.start(.{
-        .token = token,
+    try session.start(.{
+        .authorization = token,
         .intents = Intents.fromRaw(INTENTS),
         .run = .{ .message_create = &message_create, .ready = &ready },
         .log = .yes,
         .options = .{},
-        .cache = Cache,
+        .cache = .defaults(allocator),
     });
 }
