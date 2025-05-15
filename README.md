@@ -11,15 +11,11 @@ A high-performance bleeding edge Discord library in Zig, featuring full API cove
 const std = @import("std");
 const Discord = @import("discord");
 const Shard = Discord.Shard;
-const Intents = Discord.Intents;
-
-const INTENTS = 53608447;
 
 var session: *Discord.Session = undefined;
 
 fn ready(_: *Shard, payload: Discord.Ready) !void {
     std.debug.print("logged in as {s}\n", .{payload.user.username});
-    // cache demonstration TODO
 }
 
 fn message_create(_: *Shard, message: Discord.Message) !void {
@@ -48,9 +44,21 @@ pub fn main() !void {
         @panic("DISCORD_TOKEN not found in environment variables");
     };
 
+    const intents = comptime blk: {
+        var bits: Discord.Intents = .{};
+        bits.Guilds = true;
+        bits.GuildMessages = true;
+        bits.GuildMembers = true;
+        // WARNING:
+        // YOU MUST SET THIS ON DEV PORTAL
+        // OTHERWISE THE LIBRARY WILL CRASH
+        bits.MessageContent = true;
+        break :blk bits;
+    };
+
     try session.start(.{
+        .intents = intents,
         .authorization = token,
-        .intents = Intents.fromRaw(INTENTS),
         .run = .{ .message_create = &message_create, .ready = &ready },
         .log = .yes,
         .options = .{},
