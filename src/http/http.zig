@@ -110,7 +110,7 @@ pub const FetchReq = struct {
     pub fn delete(self: *FetchReq, path: []const u8) !Result(void) {
         const result = try self.makeRequest(.DELETE, path, null);
         if (result.status != .no_content)
-            return try json_helpers.tryParse(DiscordError, void, self.allocator, try self.body.toOwnedSlice());
+            return try json_helpers.parseRight(DiscordError, void, self.allocator, try self.body.toOwnedSlice());
 
         return .ok({});
     }
