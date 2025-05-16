@@ -1,11 +1,6 @@
 const std = @import("std");
 
-// Although this function looks imperative, note that its job is to
-// declaratively construct a build graph that will be executed by an external
-// runner.
 pub fn build(b: *std.Build) void {
-    // these are boiler plate code until you know what you are doing
-    // and you need to add additional options
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -30,6 +25,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
         .link_libc = true,
+        .use_llvm = true,
     });
 
     marin.root_module.addImport("discord", dzig);
@@ -47,9 +43,11 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addStaticLibrary(.{
         .name = "discord.zig",
-        .root_source_file = b.path("lib/discord.zig"),
+        .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
+        .use_llvm = true,
     });
 
     lib.root_module.addImport("ws", websocket.module("websocket"));

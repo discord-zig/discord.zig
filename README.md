@@ -71,13 +71,18 @@ pub fn main() !void {
 ```zig
 // In your build.zig file
 const exe = b.addExecutable(.{
-    .name = "marin",
+    .name = "beluga",
     .root_source_file = b.path("src/main.zig"),
     .target = target,
+    // just a suggestion, use .ReleaseSafe
     .optimize = optimize,
+    // must always be on, hard dependency
+    .link_libc = true,
+    // self-hosted backed is unstable as of today 2025-05-16, 
+    .use_llvm = true,
 });
 
-const dzig = b.dependency("discord.zig", .{});
+const dzig = b.dependency("discordzig", .{});
 
 exe.root_module.addImport("discord.zig", dzig.module("discord.zig"));
 ```
@@ -87,17 +92,19 @@ exe.root_module.addImport("discord.zig", dzig.module("discord.zig"));
 ## contributing
 Contributions are welcome! Please open an issue or pull request if you'd like to help improve the library.
 * Support server: https://discord.gg/RBHkBt7nP5
-* The original repo: https://codeberg.org/yuzu/discord.zig
+* The original repo: https://git.yuzucchii.xyz/yuzucchii/discord.zig
 
 ## general roadmap
 | Task                                                        | Status |
 |-------------------------------------------------------------|--------|
-| stablish good sharding support w buckets and worker threads | ✅     |
-| finish multi threading                                      | ✅     |
-| finish the event coverage roadmap                           | ✅     |
-| proper error handling                                       | ✅     |
 | make the library scalable with a gateway proxy              | ❌     |
 | get a cool logo                                             | ❌     |
+
+## missing structures
+| feature                  | Status |
+|--------------------------|--------|
+| components V2            | ❌     |
+| the tags beside ur name  | ❌     |
 
 ## missing events right now
 | Event                                  | Support |
