@@ -58,7 +58,6 @@
         banner: ?[]const u8 = null,
         /// data for the user's avatar decoration
         avatar_decoration_data: ?AvatarDecorationData = null,
-        clan: ?[]const u8 = null,
     };
 
     /// https://discord.com/developers/docs/resources/user#avatar-decoration-data-object

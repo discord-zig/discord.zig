@@ -253,7 +253,11 @@ fn readMessage(self: *Self, _: anytype) !void {
         // must allocate to avoid race conditions
         const payload = try self.allocator.create(std.json.Value);
 
-        const raw = try std.json.parseFromSlice(GatewayPayloadType, self.allocator, decompressed, .{
+        // needed for diagnostics
+        var scanner = json.Scanner.initCompleteInput(self.allocator, decompressed);
+        errdefer scanner.deinit();
+
+        const raw = try std.json.parseFromTokenSource(GatewayPayloadType, self.allocator, &scanner, .{
             .ignore_unknown_fields = true,
             .max_value_len = 0x1000,
         });
@@ -273,7 +277,7 @@ fn readMessage(self: *Self, _: anytype) !void {
 
                     // run thread pool
                     if (self.sharder_pool) |sharder_pool| {
-                        try sharder_pool.spawn(handleEventNoError, .{ self, name, payload });
+                        try sharder_pool.spawn(handleEventNoError, .{ self, name, payload, &scanner });
                     } else try self.handleEvent(name, payload.*);
                 }
             },
@@ -431,12 +435,29 @@ pub fn send(self: *Self, _: bool, data: anytype) SendError!void {
     try self.client.write(try string.toOwnedSlice());
 }
 
-pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Value) void {
+pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Value, scanner: *json.Scanner) void {
+    var diagnostics = json.Diagnostics{};
+    scanner.enableDiagnostics(&diagnostics);
+
     // log to make sure this executes
-    self.logif("Shard {d} dispatching {s}\n", .{self.id, name});
+    self.logif("Shard {d} dispatching {s}", .{self.id, name});
+
+    const stdout = std.io.getStdOut().writer();
 
     self.handleEvent(name, payload_ptr.*) catch |err| {
-        self.logif("Shard {d} error: {s}\n", .{self.id, @errorName(err)});
+        self.logif(
+            \\Shard {d} error: {s}
+            \\on column {d} and line {d} offset {d}
+        , .{
+            self.id,
+            @errorName(err),
+            diagnostics.getColumn(),
+            diagnostics.getLine(),
+            diagnostics.getByteOffset(),
+        });
+        std.json.stringify(payload_ptr, .{
+            .whitespace = .indent_4
+        }, stdout) catch {};
     };
 }
 
