@@ -418,15 +418,6 @@ pub fn connect(self: *Self) ConnectError!void {
         net.Stream.ReadError.NotOpenForReading => {
             std.debug.panic("Shard {d}: Stream closed unexpectedly", .{self.id}); // still check your intents
         },
-        // debug this further
-        error.DataError => |e| {
-            std.debug.panic("Shard {d} DATA ERROR: panicked with error {s} code {d} in thread {any}", .{
-                self.id,
-                @errorName(e),
-                @intFromError(e),
-                std.Thread.getCurrentId(),
-            });
-        },
         else => {
             // log that the connection died, but don't stop the bot
             self.logif("Shard {d} closed with error: {s}", .{self.id, @errorName(err)});
