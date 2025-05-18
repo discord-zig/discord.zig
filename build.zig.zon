@@ -28,7 +28,7 @@
             .url = "https://github.com/yuzudev/zig-zlib/archive/refs/heads/main.zip",
             .hash = "zlib-0.1.0-AAAAAKm6QADNBB6NBPHanW9G0EOPTmgJsRO6NFT__arp",
         },
-        .websocket = .{ .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip", .hash = "websocket-0.1.0-ZPISdYBIAwB1yO6AFDHRHLaZSmpdh4Bz4dCmaQUqNNWh" },
+        .websocket = .{ .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip", .hash = "websocket-0.1.0-ZPISdbhVAwCL-zrOIFLKLr6CHtwV92raAnObudtbYQjJ" },
     },
     .paths = .{
         "build.zig",
