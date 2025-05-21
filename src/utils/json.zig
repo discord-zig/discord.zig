@@ -17,6 +17,8 @@
 const std = @import("std");
 const json = std.json;
 
+const MAX_VALUE_LEN = 0x1000;
+
 /// a hashmap for key value pairs
 /// where every key is an int
 ///
@@ -49,7 +51,7 @@ pub fn AssociativeArray(comptime E: type, comptime V: type) type {
 
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
                 .ignore_unknown_fields = true,
-                .max_value_len = 0x100
+                .max_value_len = MAX_VALUE_LEN
             });
 
             var iterator = value.object.iterator();
@@ -63,7 +65,7 @@ pub fn AssociativeArray(comptime E: type, comptime V: type) type {
 
                 const val = try std.json.parseFromValueLeaky(V, allocator, v, .{
                     .ignore_unknown_fields = true,
-                    .max_value_len = 0x100,
+                    .max_value_len = MAX_VALUE_LEN,
                 });
 
                 map.put(@enumFromInt(int), val);
@@ -98,7 +100,7 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
 
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
                 .ignore_unknown_fields = true,
-                .max_value_len = 0x100
+                .max_value_len = MAX_VALUE_LEN
             });
 
             const discriminator = value.object.get(key) orelse
@@ -114,7 +116,7 @@ pub fn DiscriminatedUnion(comptime U: type, comptime key: []const u8) type {
                     comptime std.debug.assert(@hasField(T, key));
                     u = @unionInit(U, field.name, try std.json.innerParse(T, allocator, src, .{
                         .ignore_unknown_fields = true,
-                        .max_value_len = 0x100,
+                        .max_value_len = MAX_VALUE_LEN,
                     }));
                 }
             }
@@ -131,7 +133,7 @@ pub fn Record(comptime T: type) type {
         pub fn jsonParse(allocator: std.mem.Allocator, src: anytype, _: json.ParseOptions) !@This() {
             const value = try std.json.innerParse(std.json.Value, allocator, src, .{
                 .ignore_unknown_fields = true,
-                .max_value_len = 0x100
+                .max_value_len = MAX_VALUE_LEN
             });
 
             errdefer value.object.deinit();
@@ -148,7 +150,7 @@ pub fn Record(comptime T: type) type {
                 // errdefer v.deinit(allocator);
                 try map.put(allocator, k, try std.json.parseFromValue(T, allocator, v, .{
                     .ignore_unknown_fields = true,
-                    .max_value_len = 0x100,
+                    .max_value_len = MAX_VALUE_LEN,
                 }));
             }
 
@@ -229,12 +231,12 @@ pub fn parseRight(comptime L: type, comptime R: type, child_allocator: std.mem.A
     const allocator = owned.arena.allocator();
     const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
         .ignore_unknown_fields = true,
-        .max_value_len = 0x100,
+        .max_value_len = MAX_VALUE_LEN,
     });
 
     owned.value = .{ .right = try json.parseFromValueLeaky(R, allocator, value, .{
         .ignore_unknown_fields = true,
-        .max_value_len = 0x100,
+        .max_value_len = MAX_VALUE_LEN,
     }) };
     errdefer owned.arena.deinit();
 
@@ -252,12 +254,12 @@ pub fn parseLeft(comptime L: type, comptime R: type, child_allocator: std.mem.Al
     const allocator = owned.arena.allocator();
     const value = try json.parseFromSliceLeaky(json.Value, allocator, data, .{
         .ignore_unknown_fields = true,
-        .max_value_len = 0x100,
+        .max_value_len = MAX_VALUE_LEN,
     });
 
     owned.value = .{ .left = try json.parseFromValueLeaky(L, allocator, value, .{
         .ignore_unknown_fields = true,
-        .max_value_len = 0x100,
+        .max_value_len = MAX_VALUE_LEN,
     }) };
     errdefer owned.arena.deinit();
 

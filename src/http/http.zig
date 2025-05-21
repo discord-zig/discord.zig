@@ -214,10 +214,12 @@ pub const FetchReq = struct {
         var string = std.ArrayList(u8).init(fba.allocator());
         errdefer string.deinit();
 
-        try json.stringify(object, .{}, string.writer());
+        try json.stringify(object, .{
+            .emit_null_optional_fields = true,
+        }, string.writer());
         const result = try self.makeRequest(.POST, path, try string.toOwnedSlice());
 
-        if (result.status != .ok)
+        if (result.status != .ok and result.status != .created and result.status != .accepted)
             return try json_helpers.parseLeft(DiscordError, T, self.allocator, try self.body.toOwnedSlice());
 
         return try json_helpers.parseRight(DiscordError, T, self.allocator, try self.body.toOwnedSlice());
@@ -244,7 +246,9 @@ pub const FetchReq = struct {
         var string = std.ArrayList(u8).init(fba.allocator());
         errdefer string.deinit();
 
-        try json.stringify(object, .{}, string.writer());
+        try json.stringify(object, .{
+            .emit_null_optional_fields = true,
+        }, string.writer());
         const result = try self.makeRequestWithFiles(.POST, path, try string.toOwnedSlice(), files);
 
         if (result.status != .ok)
@@ -259,7 +263,9 @@ pub const FetchReq = struct {
         var string = std.ArrayList(u8).init(fba.allocator());
         errdefer string.deinit();
 
-        try json.stringify(object, .{}, string.writer());
+        try json.stringify(object, .{
+            .emit_null_optional_fields = true,
+        }, string.writer());
         const result = try self.makeRequest(.POST, path, try string.toOwnedSlice());
 
         if (result.status != .no_content)

@@ -25,12 +25,43 @@ fn ready(_: *Shard, payload: Discord.Ready) !void {
 }
 
 fn message_create(_: *Shard, message: Discord.Message) !void {
-    if (message.content != null and std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
-        var result = try session.api.sendMessage(message.channel_id, .{ .content = "hi :)" });
-        defer result.deinit();
+    if (message.content != null) {
+        if (std.ascii.eqlIgnoreCase(message.content.?, "!hi")) {
+            var result = try session.api.sendMessage(message.channel_id, .{ .content = "hi :)" });
+            defer result.deinit();
 
-        const m = result.value.unwrap();
-        std.debug.print("sent: {?s}\n", .{m.content});
+            const m = result.value.unwrap();
+            std.debug.print("sent: {?s}\n", .{m.content});
+        }
+
+        if (std.ascii.eqlIgnoreCase(message.content.?, "!ping")) {
+            var result = try session.api.sendMessage(message.channel_id, .{ .content = "pong" });
+            defer result.deinit();
+            const m = result.value.unwrap();
+            std.debug.print("sent: {?s}\n", .{m.content});
+        }
+
+        if (std.ascii.eqlIgnoreCase(message.content.?, "!create-channel")) {
+            var result = try session.api.createChannel(message.guild_id.?, .{
+                .name = "test-channel",
+                .type = .GuildText,
+                .topic = null,
+                .bitrate = null,
+                .permission_overwrites = null,
+                .nsfw = false,
+                .default_reaction_emoji = null,
+                .available_tags = null,
+            });
+            defer result.deinit();
+            switch (result.value) {
+                .left => |err| {
+                    std.debug.print("error creating channel: {any}\n", .{err});
+                },
+                .right => |channel| {
+                    std.debug.print("created channel: {?s}\n", .{channel.name});
+                },
+            }
+        }
     }
 }
 
