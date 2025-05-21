@@ -608,25 +608,9 @@
         /// Default duration (in minutes) that clients (not the API) use for newly created threads in this channel, to determine when to automatically archive the thread after the last activity
         default_auto_archive_duration: ?isize = null,
         /// Emoji to show in the add reaction button on a thread in a forum channel
-        default_reaction_emoji: ?struct {
-            /// The id of a guild's custom emoji. Exactly one of `emojiId` and `emojiName` must be set.
-        emoji_id: ?Snowflake = null,
-            /// The unicode character of the emoji. Exactly one of `emojiId` and `emojiName` must be set.
-        emoji_name: ?[]const u8 = null,
-        },
+        default_reaction_emoji: ?DefaultReactionEmoji = null,
         /// Set of tags that can be used in a forum channel
-        available_tags: ?[]struct {
-            /// The id of the tag
-            id: Snowflake,
-            /// The name of the tag (0-20 characters)
-            name: []const u8,
-            /// whether this tag can only be added to or removed from threads by a member with the MANAGE_THREADS permission
-            moderated: bool,
-            /// The id of a guild's custom emoji
-            emoji_id: Snowflake,
-            /// The unicode character of the emoji
-        emoji_name: ?[]const u8 = null,
-        },
+        available_tags: ?[]ForumTag = null,
         /// the default sort order type used to order posts in forum channels
         default_sort_order: ?SortOrderTypes = null,
     };
