@@ -132,7 +132,7 @@ pub fn sendMessageWithFiles(
     self: *Self,
     channel_id: Snowflake,
     wf: CreateMessageWithFile,
-) RequestFailedError!void {
+) RequestFailedError!Result(Types.Message) {
     var buf: [256]u8 = undefined;
     const path = try std.fmt.bufPrint(&buf, "/channels/{d}/messages", .{channel_id.into()});
 
@@ -2068,4 +2068,3 @@ pub fn deleteSticker(self: *Self, guild_id: Snowflake, sticker_id: Snowflake) Re
 
     return req.delete(path);
 }
-
