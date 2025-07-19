@@ -223,8 +223,7 @@ pub const ReadError =
 fn readMessage(self: *Self, _: anytype) (ReadError || SendError || ReconnectError)!void {
     try self.client.readTimeout(0);
 
-    var i: u64 = 0;
-    while (true) : (i += 1) {
+    while (true) {
         const msg = self.client.read() catch |err| {
             self.logif(
                 \\couldn't read message because {s}

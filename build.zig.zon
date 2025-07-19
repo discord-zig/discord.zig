@@ -25,9 +25,8 @@
     // internet connectivity.
     .dependencies = .{
         .zlib = .{
-            // .url = "https://git.yuzucchii.xyz/yuzucchii/zlib/archive/master.tar.gz",
-            // .hash = "zlib-0.1.0-AAAAALW6QABbti7dQfKuK0IQb-xdcp3SI8zdTvs5ouUD",
-            .path = "./zlib",
+            .url = "https://git.yuzucchii.xyz/yuzucchii/zlib/archive/master.tar.gz",
+            .hash = "zlib-0.1.0-AAAAALW6QABbti7dQfKuK0IQb-xdcp3SI8zdTvs5ouUD",
         },
         .websocket = .{
             .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip",
