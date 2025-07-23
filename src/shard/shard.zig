@@ -23,6 +23,7 @@ const crypto = std.crypto;
 const tls = std.crypto.tls;
 const mem = std.mem;
 const http = std.http;
+const io = std.io;
 
 const MAX_VALUE_LEN = 0x1000;
 
@@ -443,15 +444,17 @@ pub fn close(self: *Self, code: ShardSocketCloseCodes, reason: []const u8) Close
     };
 }
 
-pub const SendError = net.Stream.WriteError || std.ArrayList(u8).Writer.Error;
+pub const SendError = net.Stream.WriteError || io.Writer.Error;
 
 pub fn send(self: *Self, _: bool, data: anytype) SendError!void {
     var buf: [1000]u8 = undefined;
-    var fba = std.heap.FixedBufferAllocator.init(&buf);
-    var string = std.ArrayList(u8).init(fba.allocator());
-    try std.json.stringify(data, .{}, string.writer());
+    var writer = io.Writer.fixed(&buf);
+    var stringify: json.Stringify = .{
+        .writer = &writer,
+    };
+    try stringify.write(data);
 
-    try self.client.write(try string.toOwnedSlice());
+    try self.client.write(writer.buffered());
 }
 
 pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Value, scanner: *json.Scanner) void {
@@ -461,7 +464,8 @@ pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Valu
     // log to make sure this executes
     self.logif("Shard {d} dispatching {s}", .{ self.id, name });
 
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buf: [1024]u8 = undefined;
+    var stdout = std.fs.File.stdout().writer(&stdout_buf);
 
     self.handleEvent(name, payload_ptr.*) catch |err| {
         self.logif(
@@ -474,7 +478,11 @@ pub fn handleEventNoError(self: *Self, name: []const u8, payload_ptr: *json.Valu
             diagnostics.getLine(),
             diagnostics.getByteOffset(),
         });
-        std.json.stringify(payload_ptr, .{ .whitespace = .indent_4 }, stdout) catch {};
+        var stringify = std.json.Stringify {
+            .writer = &stdout.interface,
+            .options = .{ .whitespace = .indent_4, },
+        };
+        stringify.write(payload_ptr) catch {};
     };
 }
 

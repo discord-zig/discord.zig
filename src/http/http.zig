@@ -16,6 +16,7 @@
 
 const std = @import("std");
 const mem = std.mem;
+const io = std.io;
 const http = std.http;
 const json = std.json;
 const json_helpers = @import("../utils/json.zig");
@@ -210,14 +211,14 @@ pub const FetchReq = struct {
 
     pub fn post(self: *FetchReq, comptime T: type, path: []const u8, object: anytype) !Result(T) {
         var buf: [4096]u8 = undefined;
-        var fba = std.heap.FixedBufferAllocator.init(&buf);
-        var string = std.ArrayList(u8).init(fba.allocator());
-        errdefer string.deinit();
+        var writer = io.Writer.fixed(&buf);
 
-        try json.stringify(object, .{
-            .emit_null_optional_fields = true,
-        }, string.writer());
-        const result = try self.makeRequest(.POST, path, try string.toOwnedSlice());
+        var stringify: json.Stringify = .{
+            .writer = &writer,
+            .options = .{ .emit_null_optional_fields = true, },
+        };
+        try stringify.write(object);
+        const result = try self.makeRequest(.POST, path, writer.buffered());
 
         if (result.status != .ok and result.status != .created and result.status != .accepted)
             return try json_helpers.parseLeft(DiscordError, T, self.allocator, try self.body.toOwnedSlice());

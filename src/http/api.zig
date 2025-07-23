@@ -1,5 +1,6 @@
 const std = @import("std");
 const mem = std.mem;
+const io = std.io;
 const json = std.json;
 const Types = @import("../structures/types.zig");
 const Snowflake = Types.Snowflake;
@@ -16,7 +17,7 @@ const FetchReq = @import("http.zig").FetchReq;
 allocator: mem.Allocator,
 authorization: []const u8,
 
-pub const RequestFailedError = MakeRequestError || error{FailedRequest} || json.ParseError(json.Scanner);
+pub const RequestFailedError = MakeRequestError || error{FailedRequest} || json.ParseError(json.Scanner) || io.Writer.Error;
 
 pub fn init(allocator: mem.Allocator, authorization: []const u8) Self {
     return .{
