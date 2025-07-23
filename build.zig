@@ -4,6 +4,8 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const install_tests = b.option(bool, "marin", "Install test executable") orelse false;
+
     const websocket = b.dependency("websocket", .{
         .target = target,
         .optimize = optimize,
@@ -21,10 +23,12 @@ pub fn build(b: *std.Build) void {
 
     const marin = b.addExecutable(.{
         .name = "marin",
-        .root_source_file = b.path("test/test.zig"),
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("test/test.zig"),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
         .use_llvm = true,
     });
 
@@ -32,7 +36,7 @@ pub fn build(b: *std.Build) void {
     marin.root_module.addImport("ws", websocket.module("websocket"));
     marin.root_module.addImport("zlib", zlib.module("zlib"));
 
-    //b.installArtifact(marin);
+    if (install_tests) b.installArtifact(marin);
 
     // test
     const run_cmd = b.addRunArtifact(marin);
@@ -41,12 +45,14 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "discord.zig",
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
         .use_llvm = true,
     });
 

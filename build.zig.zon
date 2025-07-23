@@ -30,7 +30,7 @@
         },
         .websocket = .{
             .url = "https://github.com/karlseguin/websocket.zig/archive/refs/heads/master.zip",
-            .hash = "websocket-0.1.0-ZPISdbhVAwCL-zrOIFLKLr6CHtwV92raAnObudtbYQjJ",
+            .hash = "websocket-0.1.0-ZPISdbZVAwAgDzIxt0cpiG4hjPVq92ALsEPLSCPbMQqv",
         },
     },
     .paths = .{
